@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,38 +8,54 @@
     <script src="/js/components.js" defer></script>
 </head>
 <body class="bg-light d-flex align-items-center justify-content-center vh-100">
-    <div class="card shadow p-4" style="width: 100%; max-width: 400px;">
+    <div class="card shadow p-4" style="width:100%;max-width:400px;">
         <h3 class="text-center mb-4">Login</h3>
+
         <form id="login-form">
             <custom-input type="text" label="Username" name="username"></custom-input>
             <custom-input type="password" label="Password" name="password"></custom-input>
+
+            <div id="login-error" class="alert alert-danger py-2" style="display:none;"></div>
+
             <custom-button text="Masuk" btn-class="btn-primary w-100 mt-3"></custom-button>
         </form>
     </div>
 
     <script>
-        document.getElementById('login-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const formData = new FormData(e.target);
+        document.getElementById("login-form").addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            const formData = new FormData(event.target);
             const data = Object.fromEntries(formData);
+            const errorBox = document.getElementById("login-error");
+
+            errorBox.style.display = "none";
 
             try {
-                const response = await fetch('/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                const response = await fetch("/login", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
                     body: JSON.stringify(data)
                 });
 
-                if (response.ok) {
-                    localStorage.setItem('isLoggedIn', 'true');
-                    alert("Dialog: 'Mantap, login sukses!'");
-                    window.location.href = '/'; 
-                } else {
-                    alert("Dialog: 'Waduh, username atau password salah nih.'");
+                const result = await response.json();
+
+                if (!response.ok) {
+                    errorBox.textContent = result.message || "Login gagal.";
+                    errorBox.style.display = "block";
+                    return;
                 }
+
+                localStorage.setItem("token", result.token);
+                localStorage.setItem("isLoggedIn", "true");
+                localStorage.setItem("username", result.user.username);
+
+                window.location.href = "/";
             } catch (error) {
-                console.error(error);
+                errorBox.textContent = "Tidak dapat terhubung ke server.";
+                errorBox.style.display = "block";
             }
         });
     </script>

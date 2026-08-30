@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Product - TokoRe</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .product-thumb {
+            width: 64px;
+            height: 64px;
+            object-fit: contain;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            background: #fff;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <nav class="navbar navbar-dark bg-dark mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="/">TokoRe</a>
+            <a class="btn btn-outline-light" href="/">Kembali</a>
+        </div>
+    </nav>
+
+    <main class="container pb-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="mb-1">Admin Product</h2>
+                <p class="text-muted mb-0">Kelola produk yang tampil di halaman utama.</p>
+            </div>
+            <button class="btn btn-primary" id="btn-add">Tambah Produk</button>
+        </div>
+
+        <div id="page-message" class="alert" style="display:none;"></div>
+
+        <div class="card shadow-sm">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Gambar</th>
+                            <th>Nama</th>
+                            <th>Kategori</th>
+                            <th>Harga</th>
+                            <th>Deskripsi</th>
+                            <th style="width:150px;">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="product-table"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="empty-table" class="text-center text-muted py-5" style="display:none;">
+            Belum ada produk.
+        </div>
+    </main>
+
+    <div class="modal fade" id="product-modal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modal-title">Tambah Produk</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <form id="product-form">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">Nama Produk</label>
+                            <input type="text" class="form-control" name="name" required maxlength="150">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Deskripsi Produk</label>
+                            <textarea class="form-control" name="description" rows="3" required></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Harga</label>
+                            <input type="number" class="form-control" name="price" min="0" step="1" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Kategori</label>
+                            <input type="text" class="form-control" name="category" required maxlength="100">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">URL Gambar Produk</label>
+                            <input type="url" class="form-control" name="image" placeholder="https://...">
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary">Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        const token = localStorage.getItem("token") || "";
+        let editingId = null;
+
+        const modal = new bootstrap.Modal(document.getElementById("product-modal"));
+        const form = document.getElementById("product-form");
+        const tableBody = document.getElementById("product-table");
+        const emptyTable = document.getElementById("empty-table");
+        const messageBox = document.getElementById("page-message");
+
+        const formatPrice = (price) => new Intl.NumberFormat("id-ID", {
+            style: "currency",
+            currency: "IDR",
+            maximumFractionDigits: 0
+        }).format(Number(price));
+
+        function showMessage(text, type = "success") {
+            messageBox.className = `alert alert-${type}`;
+            messageBox.textContent = text;
+            messageBox.style.display = "block";
+
+            setTimeout(() => {
+                messageBox.style.display = "none";
+            }, 3000);
+        }
+
+        function openAdd() {
+            editingId = null;
+            form.reset();
+            document.getElementById("modal-title").textContent = "Tambah Produk";
+            modal.show();
+        }
+
+        function openEdit(product) {
+            editingId = product.id;
+            form.elements.name.value = product.name;
+            form.elements.description.value = product.description;
+            form.elements.price.value = product.price;
+            form.elements.category.value = product.category;
+            form.elements.image.value = product.image || "";
+            document.getElementById("modal-title").textContent = "Edit Produk";
+            modal.show();
+        }
+
+        async function request(url, options = {}) {
+            const response = await fetch(url, {
+                ...options,
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                    ...(options.headers || {})
+                }
+            });
+
+            const data = await response.json();
+
+            if (response.status === 401) {
+                localStorage.clear();
+                window.location.href = "/login-page";
+                return null;
+            }
+
+            if (!response.ok) {
+                throw new Error(data.message || "Terjadi kesalahan");
+            }
+
+            return data;
+        }
+
+        async function loadProducts() {
+            try {
+                const response = await fetch("/api/products");
+                const products = await response.json();
+
+                tableBody.innerHTML = "";
+                emptyTable.style.display = products.length ? "none" : "block";
+
+                products.forEach((product) => {
+                    const row = document.createElement("tr");
+
+                    const imageCell = document.createElement("td");
+                    const image = document.createElement("img");
+
+                    image.className = "product-thumb";
+                    image.src = product.image || "https://via.placeholder.com/64x64?text=No";
+                    image.alt = product.name;
+
+                    imageCell.appendChild(image);
+
+                    const nameCell = document.createElement("td");
+                    nameCell.textContent = product.name;
+
+                    const categoryCell = document.createElement("td");
+                    categoryCell.textContent = product.category;
+
+                    const priceCell = document.createElement("td");
+                    priceCell.textContent = formatPrice(product.price);
+
+                    const descriptionCell = document.createElement("td");
+                    descriptionCell.textContent = product.description;
+
+                    const actionCell = document.createElement("td");
+                    actionCell.className = "d-flex gap-2";
+
+                    const editButton = document.createElement("button");
+                    editButton.className = "btn btn-sm btn-outline-primary";
+                    editButton.textContent = "Edit";
+                    editButton.addEventListener("click", () => openEdit(product));
+
+                    const deleteButton = document.createElement("button");
+                    deleteButton.className = "btn btn-sm btn-outline-danger";
+                    deleteButton.textContent = "Hapus";
+
+                    deleteButton.addEventListener("click", async () => {
+                        if (!confirm(`Hapus produk ${product.name}?`)) {
+                            return;
+                        }
+
+                        try {
+                            await request(`/api/products/${product.id}`, {
+                                method: "DELETE"
+                            });
+
+                            showMessage("Produk berhasil dihapus.");
+                            loadProducts();
+                        } catch (error) {
+                            showMessage(error.message, "danger");
+                        }
+                    });
+
+                    actionCell.append(editButton, deleteButton);
+                    row.append(imageCell, nameCell, categoryCell, priceCell, descriptionCell, actionCell);
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                showMessage("Gagal mengambil data produk.", "danger");
+            }
+        }
+
+        document.getElementById("btn-add").addEventListener("click", openAdd);
+
+        form.addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            const data = Object.fromEntries(new FormData(form));
+            data.price = Number(data.price);
+
+            try {
+                await request(
+                    editingId ? `/api/products/${editingId}` : "/api/products",
+                    {
+                        method: editingId ? "PUT" : "POST",
+                        body: JSON.stringify(data)
+                    }
+                );
+
+                modal.hide();
+                showMessage(editingId ? "Produk berhasil diubah." : "Produk berhasil ditambahkan.");
+                loadProducts();
+            } catch (error) {
+                showMessage(error.message, "danger");
+            }
+        });
+
+        if (!token) {
+            window.location.href = "/login-page";
+        } else {
+            loadProducts();
+        }
+    </script>
+</body>
+</html>

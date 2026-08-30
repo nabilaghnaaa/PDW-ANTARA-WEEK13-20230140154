@@ -1,27 +1,56 @@
 const userModel = require("../models/userModel");
+const { createToken, removeToken } = require("../middleware/authMiddleware");
 
-/**
- * Processes the login request and validates credentials against the database.
- * @param {Object} req - The HTTP request object.
- * @param {Object} res - The HTTP response object.
- * @returns {Promise<void>}
- */
 async function loginUser(req, res) {
-  const { username, password } = req.body;
+    const { username, password } = req.body;
 
-  try {
-    const user = await userModel.getUserByUsername(username);
-
-    if (user && user.password === password) {
-      res.status(200).json({ message: "Success" });
-    } else {
-      res.status(401).json({ message: "Unauthorized" });
+    if (!username || !password) {
+        return res.status(400).json({
+            message: "Username dan password wajib diisi"
+        });
     }
-  } catch (error) {
-    res.status(500).json({ message: "Server error" });
-  }
+
+    try {
+        const user = await userModel.getUserByUsername(username.trim());
+
+        if (!user || user.password !== password) {
+            return res.status(401).json({
+                message: "Username atau password salah"
+            });
+        }
+
+        const token = createToken(user);
+
+        res.status(200).json({
+            message: "Success",
+            token,
+            user: {
+                id: user.id,
+                username: user.username,
+                role: user.role || "admin"
+            }
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: "Server error"
+        });
+    }
+}
+
+function logoutUser(req, res) {
+    const header = req.headers.authorization || "";
+    const token = header.startsWith("Bearer ") ? header.slice(7) : "";
+
+    if (token) {
+        removeToken(token);
+    }
+
+    res.status(200).json({
+        message: "Logout berhasil"
+    });
 }
 
 module.exports = {
-  loginUser,
+    loginUser,
+    logoutUser
 };

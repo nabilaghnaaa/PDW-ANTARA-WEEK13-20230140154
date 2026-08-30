@@ -1,25 +1,22 @@
 const express = require("express");
 require("dotenv").config();
+require("./config/db");
+
 const authRoutes = require("./routes/authRoutes");
+const productRoutes = require("./routes/productRoutes");
+const aiRoutes = require("./routes/aiRoutes");
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-app.use(express.json());
+app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
+app.use("/api/products", productRoutes);
+app.use("/api/ai", aiRoutes);
 app.use("/", authRoutes);
 
-/**
- * Starts the Express server.
- * @param {number} port - The port number to listen on.
- * @returns {void}
- */
-function startServer(port) {
-  app.listen(port, () => {
+app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
-  });
-}
-
-startServer(port);
+});
