@@ -3,151 +3,788 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Belanja</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>TokoRe</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/components.css" rel="stylesheet">
     <script src="/js/components.js" defer></script>
     <style>
-        body { min-height: 100vh; }
-        .product-card { transition: .2s ease; }
-        .product-card:hover { transform: translateY(-3px); }
-        .product-image { height: 250px; object-fit: contain; }
-        .chat-box { position: fixed; right: 20px; bottom: 20px; width: min(360px, calc(100vw - 40px)); z-index: 1050; }
-        .chat-panel { display: none; }
-        .chat-panel.show { display: block; }
-        .chat-messages { height: 320px; overflow-y: auto; background: #f8f9fa; }
-        .chat-message { white-space: pre-wrap; }
+        :root {
+            --navy: #18324d;
+            --navy-dark: #10263c;
+            --page: #f8f8f6;
+            --text: #2f3d4a;
+            --muted: #77828d;
+            --border: #dde2e7;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            margin: 0;
+            background: var(--page);
+            color: var(--text);
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .site-navbar {
+            background: #fff;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .navbar-inner {
+            min-height: 66px;
+        }
+
+        .brand {
+            color: var(--navy);
+            text-decoration: none;
+            font-size: 21px;
+            font-weight: 700;
+            letter-spacing: -.3px;
+        }
+
+        .navbar-actions {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 7px;
+        }
+
+        .hero-section {
+            padding: 42px 0 30px;
+        }
+
+        .hero-content {
+            max-width: 760px;
+        }
+
+        .hero-title {
+            max-width: 720px;
+            margin: 0;
+            color: var(--navy);
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(31px, 4vw, 45px);
+            font-weight: 700;
+            line-height: 1.15;
+            letter-spacing: -.8px;
+        }
+
+        .hero-description {
+            max-width: 590px;
+            margin: 13px 0 0;
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .hero-line {
+            width: 46px;
+            height: 3px;
+            margin-top: 18px;
+            background: #c58b70;
+        }
+
+        .products-section {
+            padding-bottom: 60px;
+        }
+
+        .products-header {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            margin-bottom: 17px;
+            padding-bottom: 11px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .section-title {
+            margin: 0;
+            color: var(--navy);
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .section-description {
+            margin: 4px 0 0;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .loading-state,
+        .empty-state {
+            padding: 60px 20px;
+            color: var(--muted);
+            text-align: center;
+            font-size: 13px;
+        }
+
+        .chat-launcher {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            z-index: 1000;
+        }
+
+        .chat-toggle {
+            min-height: 40px;
+            padding: 0 14px;
+            border: 1px solid #cbd2d9;
+            border-radius: 6px;
+            background: #fff;
+            color: #4f6171;
+            box-shadow: 0 5px 14px rgba(29, 43, 58, .08);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color .18s ease, border-color .18s ease;
+        }
+
+        .chat-toggle:hover {
+            background: #f7f8f8;
+            border-color: #bfc7cf;
+        }
+
+        .chat-panel {
+            position: fixed;
+            right: 20px;
+            bottom: 70px;
+            z-index: 1001;
+            display: none;
+            width: 360px;
+            max-width: calc(100vw - 24px);
+            overflow: hidden;
+            border: 1px solid #d5dbe1;
+            border-radius: 8px;
+            background: #fff;
+            box-shadow: 0 12px 30px rgba(29, 43, 58, .12);
+        }
+
+        .chat-panel.show {
+            display: block;
+        }
+
+        .chat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 13px 15px;
+            border-bottom: 1px solid #e4e7ea;
+            background: #fff;
+        }
+
+        .chat-title {
+            margin: 0;
+            color: var(--navy);
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .chat-subtitle {
+            margin: 3px 0 0;
+            color: #8a949e;
+            font-size: 10px;
+        }
+
+        .chat-close {
+            padding: 2px 5px;
+            border: 0;
+            background: transparent;
+            color: #7f8993;
+            cursor: pointer;
+            font-size: 18px;
+            line-height: 1;
+        }
+
+        .chat-messages {
+            height: 315px;
+            padding: 14px;
+            overflow-x: hidden;
+            overflow-y: auto;
+            background: #f7f7f5;
+        }
+
+        .chat-input-wrap {
+            padding: 10px;
+            border-top: 1px solid #e4e7ea;
+            background: #fff;
+        }
+
+        .chat-form {
+            display: flex;
+            gap: 7px;
+        }
+
+        .chat-input {
+            min-width: 0;
+            flex: 1;
+            min-height: 39px;
+            padding: 0 11px;
+            border: 1px solid #d5dbe1;
+            border-radius: 6px;
+            outline: none;
+            background: #fff;
+            color: #35424f;
+            font-size: 12px;
+        }
+
+        .chat-input:focus {
+            border-color: #718295;
+        }
+
+        .chat-send {
+            min-width: 62px;
+            border: 1px solid var(--navy);
+            border-radius: 6px;
+            background: var(--navy);
+            color: #fff;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .chat-send:hover {
+            background: var(--navy-dark);
+        }
+
+        .cart-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 1100;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(31, 40, 49, .35);
+        }
+
+        .cart-modal.show {
+            display: flex;
+        }
+
+        .cart-box {
+            width: min(480px, 100%);
+            max-height: min(620px, calc(100vh - 40px));
+            overflow: hidden;
+            border: 1px solid #d9dfe5;
+            border-radius: 8px;
+            background: #fff;
+            box-shadow: 0 18px 45px rgba(29, 43, 58, .16);
+        }
+
+        .cart-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 18px;
+            border-bottom: 1px solid #e4e7ea;
+        }
+
+        .cart-title {
+            margin: 0;
+            color: var(--navy);
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .cart-close {
+            border: 0;
+            background: transparent;
+            color: #7c8791;
+            cursor: pointer;
+            font-size: 20px;
+            line-height: 1;
+        }
+
+        .cart-body {
+            max-height: 420px;
+            padding: 15px 18px;
+            overflow-y: auto;
+        }
+
+        .cart-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid #edf0f2;
+        }
+
+        .cart-item:last-child {
+            border-bottom: 0;
+        }
+
+        .cart-item-image {
+            flex: 0 0 54px;
+            width: 54px;
+            height: 54px;
+            object-fit: cover;
+            border: 1px solid #dde2e7;
+            border-radius: 6px;
+            background: #f2f0eb;
+        }
+
+        .cart-item-info {
+            min-width: 0;
+            flex: 1;
+        }
+
+        .cart-item-name {
+            margin: 0 0 3px;
+            color: #2f3d4a;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .cart-item-price {
+            margin: 0;
+            color: #7b858f;
+            font-size: 11px;
+        }
+
+        .cart-remove {
+            min-height: 30px;
+            padding: 0 9px;
+            border: 1px solid #dec5c1;
+            border-radius: 6px;
+            background: #fff;
+            color: #a6534b;
+            font-size: 10px;
+            cursor: pointer;
+        }
+
+        .cart-remove:hover {
+            background: #fdf5f3;
+        }
+
+        .cart-empty {
+            padding: 40px 15px;
+            color: #7d8790;
+            text-align: center;
+            font-size: 13px;
+        }
+
+        .cart-footer {
+            padding: 14px 18px;
+            border-top: 1px solid #e4e7ea;
+        }
+
+        .cart-total {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .cart-total-label {
+            color: #77828d;
+            font-size: 12px;
+        }
+
+        .cart-total-value {
+            color: var(--navy);
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        @media (max-width: 991px) {
+            .product-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 767px) {
+            .navbar-inner {
+                min-height: 60px;
+                padding-top: 10px;
+                padding-bottom: 10px;
+            }
+
+            .navbar-actions {
+                flex-wrap: wrap;
+                justify-content: flex-end;
+            }
+
+            .hero-section {
+                padding: 32px 0 26px;
+            }
+
+            .hero-title {
+                font-size: 32px;
+            }
+
+            .product-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .chat-panel {
+                right: 12px;
+                bottom: 65px;
+                width: calc(100vw - 24px);
+            }
+
+            .chat-launcher {
+                right: 12px;
+                bottom: 12px;
+            }
+
+            .chat-toggle {
+                min-height: 38px;
+            }
+
+            .cart-modal {
+                padding: 12px;
+            }
+
+            .cart-box {
+                width: 100%;
+                max-height: calc(100vh - 24px);
+            }
+        }
+
+        @media (max-width: 420px) {
+            .brand {
+                font-size: 18px;
+            }
+
+            .navbar-actions {
+                gap: 4px;
+            }
+
+            .navbar-actions .custom-btn {
+                min-height: 33px;
+                padding: 0 9px;
+                font-size: 11px;
+            }
+
+            .hero-title {
+                font-size: 29px;
+            }
+
+            .hero-description {
+                font-size: 13px;
+            }
+
+            .chat-form {
+                gap: 5px;
+            }
+
+            .chat-send {
+                min-width: 58px;
+            }
+        }
     </style>
 </head>
-<body class="bg-light">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
-        <div class="container">
-            <a class="navbar-brand" href="/">TokoRe</a>
-            <div class="d-flex gap-2 align-items-center">
-                <a href="/admin/products" class="btn btn-outline-light" id="btn-admin" style="display:none;">Admin Produk</a>
-                <div id="cart-container">
-                    <custom-button text="Keranjang (0)" btn-class="btn-outline-light" id="btn-cart"></custom-button>
-                </div>
-                <a href="/login-page" class="btn btn-primary" id="btn-login-nav">Login</a>
-                <button class="btn btn-danger" id="btn-logout" style="display:none;">Logout</button>
+<body>
+    <nav class="site-navbar">
+        <div class="container navbar-inner d-flex align-items-center justify-content-between gap-3">
+            <a href="/" class="brand">TokoRe</a>
+
+            <div class="navbar-actions">
+                <custom-button id="btn-cart" text="Keranjang (0)" variant="light" size="sm"></custom-button>
+
+                <a href="/admin/products" id="btn-admin" class="text-decoration-none" style="display:none;">
+                    <custom-button text="Admin" variant="light" size="sm"></custom-button>
+                </a>
+
+                <a href="/login-page" id="btn-login-nav" class="text-decoration-none">
+                    <custom-button text="Login" variant="primary" size="sm"></custom-button>
+                </a>
+
+                <custom-button id="btn-logout" text="Logout" variant="danger" size="sm" style="display:none;"></custom-button>
             </div>
         </div>
     </nav>
 
-    <main class="container pb-5">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <h2 class="mb-1">Produk Pilihan</h2>
-                <p class="text-muted mb-0">Temukan produk yang tersedia di TokoRe.</p>
+    <main class="container">
+        <section class="hero-section">
+            <div class="hero-content">
+                <h1 class="hero-title">Produk yang kamu cari, ada di sini.</h1>
+                <p class="hero-description">Lihat pilihan produk yang tersedia di TokoRe, cek detailnya, lalu pilih yang sesuai dengan kebutuhanmu.</p>
+                <div class="hero-line"></div>
             </div>
-        </div>
+        </section>
 
-        <div class="row g-4" id="product-list"></div>
-        <div id="empty-state" class="text-center text-muted py-5" style="display:none;">Belum ada produk.</div>
+        <section class="products-section">
+            <div class="products-header">
+                <div>
+                    <h2 class="section-title">Produk</h2>
+                    <p class="section-description">Pilihan yang tersedia saat ini.</p>
+                </div>
+            </div>
+
+            <div id="product-list" class="product-grid"></div>
+            <div id="loading-state" class="loading-state">Memuat produk...</div>
+            <div id="empty-state" class="empty-state" style="display:none;">Belum ada produk yang tersedia.</div>
+        </section>
     </main>
 
-    <div class="chat-box">
-        <div class="card shadow-sm chat-panel" id="chat-panel">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <strong>AI Chat</strong>
-                <button class="btn btn-sm btn-light" id="chat-close">Tutup</button>
+    <div class="chat-panel" id="chat-panel">
+        <div class="chat-header">
+            <div>
+                <p class="chat-title">Bantuan TokoRe</p>
+                <p class="chat-subtitle">Tanyakan tentang produk dan toko</p>
             </div>
-            <div class="chat-messages p-3" id="chat-messages">
-                <div class="small text-muted mb-2">Tanyakan tentang produk, harga, kategori, atau fitur toko.</div>
-            </div>
-            <form id="chat-form" class="border-top p-2">
-                <div class="input-group">
-                    <input type="text" class="form-control" id="chat-input" placeholder="Tulis pertanyaan..." maxlength="1000" required>
-                    <button class="btn btn-primary" type="submit">Kirim</button>
-                </div>
+            <button type="button" class="chat-close" id="chat-close">&times;</button>
+        </div>
+
+        <div class="chat-messages" id="chat-messages">
+            <custom-chat-bubble role="assistant" message="Halo. Mau cari informasi produk apa?"></custom-chat-bubble>
+        </div>
+
+        <div class="chat-input-wrap">
+            <form class="chat-form" id="chat-form">
+                <input type="text" class="chat-input" id="chat-input" placeholder="Tulis pertanyaan..." maxlength="1000" required>
+                <button type="submit" class="chat-send">Kirim</button>
             </form>
         </div>
-        <button class="btn btn-dark shadow-sm w-100 mt-2" id="chat-toggle">AI Chat</button>
+    </div>
+
+    <div class="chat-launcher">
+        <button type="button" class="chat-toggle" id="chat-toggle">Butuh bantuan</button>
+    </div>
+
+    <div class="cart-modal" id="cart-modal">
+        <div class="cart-box">
+            <div class="cart-header">
+                <h2 class="cart-title">Keranjang</h2>
+                <button type="button" class="cart-close" id="cart-close">&times;</button>
+            </div>
+
+            <div class="cart-body" id="cart-body"></div>
+
+            <div class="cart-footer">
+                <div class="cart-total">
+                    <span class="cart-total-label">Total</span>
+                    <span class="cart-total-value" id="cart-total">Rp0</span>
+                </div>
+
+                <custom-button id="cart-checkout" text="Lanjutkan" variant="primary" style="width:100%;"></custom-button>
+            </div>
+        </div>
     </div>
 
     <script>
         const token = localStorage.getItem("token") || "";
-        const isLoggedIn = Boolean(token);
+        const role = (localStorage.getItem("role") || "").toLowerCase();
+        const isAdmin = Boolean(token) && role === "admin";
         const chatHistory = [];
+        const CART_KEY = "tokore_cart";
+
         const productList = document.getElementById("product-list");
+        const loadingState = document.getElementById("loading-state");
         const emptyState = document.getElementById("empty-state");
+        const chatMessages = document.getElementById("chat-messages");
+        const chatPanel = document.getElementById("chat-panel");
+        const cartModal = document.getElementById("cart-modal");
+        const cartBody = document.getElementById("cart-body");
+        const cartTotal = document.getElementById("cart-total");
+        const cartButton = document.getElementById("btn-cart");
+
         const formatPrice = (price) => new Intl.NumberFormat("id-ID", {
             style: "currency",
             currency: "IDR",
             maximumFractionDigits: 0
         }).format(Number(price));
 
-        const showAuthState = () => {
-            document.getElementById("btn-login-nav").style.display = isLoggedIn ? "none" : "block";
-            document.getElementById("btn-logout").style.display = isLoggedIn ? "block" : "none";
-            document.getElementById("btn-admin").style.display = isLoggedIn ? "block" : "none";
-        };
+        function getCart() {
+            try {
+                const cart = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
 
-        const addToCart = () => {
-            if (!isLoggedIn) {
-                alert("Silakan login dulu untuk menambahkan produk ke keranjang.");
-                window.location.href = "/login-page";
+                return Array.isArray(cart) ? cart : [];
+            } catch (error) {
+                return [];
+            }
+        }
+
+        function saveCart(cart) {
+            localStorage.setItem(CART_KEY, JSON.stringify(cart));
+        }
+
+        function updateCartCount() {
+            if (isAdmin) {
                 return;
             }
 
-            alert("Produk berhasil dimasukkan ke keranjang.");
-        };
+            const cart = getCart();
+            const totalItems = cart.reduce((total, item) => total + Number(item.quantity || 0), 0);
+
+            cartButton.setAttribute("text", `Keranjang (${totalItems})`);
+        }
+
+        function updateNavigation() {
+            document.getElementById("btn-login-nav").style.display = isAdmin ? "none" : "inline-flex";
+            document.getElementById("btn-logout").style.display = isAdmin ? "inline-flex" : "none";
+            document.getElementById("btn-admin").style.display = isAdmin ? "inline-flex" : "none";
+            document.getElementById("btn-cart").style.display = isAdmin ? "none" : "inline-flex";
+        }
+
+        function addToCart(product) {
+            if (isAdmin) {
+                return;
+            }
+
+            const cart = getCart();
+            const existing = cart.find((item) => Number(item.id) === Number(product.id));
+
+            if (existing) {
+                existing.quantity += 1;
+            } else {
+                cart.push({
+                    id: product.id,
+                    name: product.name,
+                    price: Number(product.price),
+                    image: product.image || "",
+                    quantity: 1
+                });
+            }
+
+            saveCart(cart);
+            updateCartCount();
+            alert(`${product.name} berhasil ditambahkan ke keranjang.`);
+        }
+
+        function removeFromCart(productId) {
+            const cart = getCart().filter((item) => Number(item.id) !== Number(productId));
+
+            saveCart(cart);
+            updateCartCount();
+            renderCart();
+        }
+
+        function renderCart() {
+            const cart = getCart();
+
+            if (!cart.length) {
+                cartBody.innerHTML = `
+                    <div class="cart-empty">
+                        Keranjang masih kosong.
+                    </div>
+                `;
+
+                cartTotal.textContent = "Rp0";
+                return;
+            }
+
+            cartBody.innerHTML = "";
+
+            let total = 0;
+
+            cart.forEach((item) => {
+                const subtotal = Number(item.price) * Number(item.quantity);
+                total += subtotal;
+
+                const itemElement = document.createElement("div");
+
+                itemElement.className = "cart-item";
+                itemElement.innerHTML = `
+                    <img src="${item.image || "https://via.placeholder.com/80x80?text=No"}" alt="${item.name}" class="cart-item-image">
+                    <div class="cart-item-info">
+                        <p class="cart-item-name">${item.name}</p>
+                        <p class="cart-item-price">${formatPrice(item.price)} × ${item.quantity}</p>
+                    </div>
+                    <button type="button" class="cart-remove">Hapus</button>
+                `;
+
+                itemElement.querySelector(".cart-remove").addEventListener("click", () => {
+                    removeFromCart(item.id);
+                });
+
+                cartBody.appendChild(itemElement);
+            });
+
+            cartTotal.textContent = formatPrice(total);
+        }
+
+        function showChatMessage(role, message) {
+            const bubble = document.createElement("custom-chat-bubble");
+
+            bubble.setAttribute("role", role);
+            bubble.setAttribute("message", message);
+
+            chatMessages.appendChild(bubble);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
 
         async function loadProducts() {
             try {
                 const response = await fetch("/api/products");
+
+                if (!response.ok) {
+                    throw new Error("Gagal mengambil produk");
+                }
+
                 const products = await response.json();
 
                 productList.innerHTML = "";
+                loadingState.style.display = "none";
                 emptyState.style.display = products.length ? "none" : "block";
 
                 products.forEach((product) => {
-                    const col = document.createElement("div");
-                    col.className = "col-md-4";
+                    const card = document.createElement("custom-card");
 
-                    const card = document.createElement("div");
-                    card.className = "card h-100 shadow-sm product-card";
+                    card.setAttribute("image", product.image || "https://via.placeholder.com/500x400?text=No+Image");
+                    card.setAttribute("category", product.category || "");
+                    card.setAttribute("title", product.name || "");
+                    card.setAttribute("description", product.description || "");
+                    card.setAttribute("price", formatPrice(product.price || 0));
 
-                    const image = document.createElement("img");
-                    image.className = "card-img-top p-3 product-image";
-                    image.alt = product.name;
-                    image.src = product.image || "https://via.placeholder.com/400x250?text=No+Image";
+                    if (!isAdmin) {
+                        card.setAttribute("button-text", "Tambah");
 
-                    const body = document.createElement("div");
-                    body.className = "card-body d-flex flex-column";
+                        card.addEventListener("card-action", () => {
+                            addToCart(product);
+                        });
+                    }
 
-                    const category = document.createElement("div");
-                    category.className = "small text-muted mb-2";
-                    category.textContent = product.category;
-
-                    const title = document.createElement("h5");
-                    title.className = "card-title";
-                    title.textContent = product.name;
-
-                    const description = document.createElement("p");
-                    description.className = "card-text text-muted flex-grow-1";
-                    description.textContent = product.description;
-
-                    const price = document.createElement("p");
-                    price.className = "card-text fw-bold mb-3";
-                    price.textContent = formatPrice(product.price);
-
-                    const button = document.createElement("button");
-                    button.className = "btn btn-success w-100";
-                    button.textContent = "Tambah ke Keranjang";
-                    button.addEventListener("click", addToCart);
-
-                    body.append(category, title, description, price, button);
-                    card.append(image, body);
-                    col.appendChild(card);
-                    productList.appendChild(col);
+                    productList.appendChild(card);
                 });
             } catch (error) {
+                loadingState.style.display = "none";
                 emptyState.style.display = "block";
                 emptyState.textContent = "Gagal mengambil data produk.";
             }
         }
 
-        document.getElementById("btn-logout").addEventListener("click", async () => {
+        cartButton.addEventListener("custom-click", () => {
+            if (isAdmin) {
+                return;
+            }
+
+            renderCart();
+            cartModal.classList.add("show");
+        });
+
+        document.getElementById("cart-close").addEventListener("click", () => {
+            cartModal.classList.remove("show");
+        });
+
+        cartModal.addEventListener("click", (event) => {
+            if (event.target === cartModal) {
+                cartModal.classList.remove("show");
+            }
+        });
+
+        document.getElementById("cart-checkout").addEventListener("custom-click", () => {
+            const cart = getCart();
+
+            if (!cart.length) {
+                alert("Keranjang masih kosong.");
+                return;
+            }
+
+            alert("Produk sudah siap diproses.");
+        });
+
+        document.getElementById("btn-logout").addEventListener("custom-click", async () => {
             try {
                 await fetch("/logout", {
                     method: "POST",
@@ -159,26 +796,17 @@
                 localStorage.removeItem("token");
                 localStorage.removeItem("isLoggedIn");
                 localStorage.removeItem("username");
+                localStorage.removeItem("role");
                 window.location.reload();
             }
         });
 
-        document.getElementById("cart-container").addEventListener("click", () => {
-            if (!isLoggedIn) {
-                alert("Silakan login dulu untuk membuka keranjang.");
-                window.location.href = "/login-page";
-                return;
-            }
-
-            alert("Fitur keranjang akan digunakan dari halaman belanja.");
-        });
-
         document.getElementById("chat-toggle").addEventListener("click", () => {
-            document.getElementById("chat-panel").classList.toggle("show");
+            chatPanel.classList.toggle("show");
         });
 
         document.getElementById("chat-close").addEventListener("click", () => {
-            document.getElementById("chat-panel").classList.remove("show");
+            chatPanel.classList.remove("show");
         });
 
         document.getElementById("chat-form").addEventListener("submit", async (event) => {
@@ -191,22 +819,16 @@
                 return;
             }
 
-            const messages = document.getElementById("chat-messages");
-            const userMessage = document.createElement("div");
-
-            userMessage.className = "chat-message text-end mb-2";
-            userMessage.textContent = message;
-            messages.appendChild(userMessage);
-
+            showChatMessage("user", message);
             input.value = "";
 
-            const payloadHistory = [...chatHistory];
-            const pendingMessage = document.createElement("div");
+            const typingBubble = document.createElement("custom-chat-bubble");
 
-            pendingMessage.className = "chat-message text-muted mb-2";
-            pendingMessage.textContent = "Sedang memproses...";
-            messages.appendChild(pendingMessage);
-            messages.scrollTop = messages.scrollHeight;
+            typingBubble.setAttribute("role", "assistant");
+            typingBubble.setAttribute("message", "Sedang mengetik...");
+
+            chatMessages.appendChild(typingBubble);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
 
             try {
                 const response = await fetch("/api/ai/chat", {
@@ -216,36 +838,41 @@
                     },
                     body: JSON.stringify({
                         message,
-                        history: payloadHistory
+                        history: [...chatHistory]
                     })
                 });
 
                 const data = await response.json();
-                pendingMessage.remove();
 
-                const answer = data.answer || data.message || "Maaf, terjadi kesalahan.";
-                const aiMessage = document.createElement("div");
+                typingBubble.remove();
 
-                aiMessage.className = "chat-message mb-3";
-                aiMessage.textContent = answer;
-                messages.appendChild(aiMessage);
+                const answer = data.answer || data.message || "Maaf, terjadi kesalahan saat memproses pertanyaan.";
+
+                showChatMessage("assistant", answer);
 
                 chatHistory.push(
-                    { role: "user", content: message },
-                    { role: "assistant", content: answer }
+                    {
+                        role: "user",
+                        content: message
+                    },
+                    {
+                        role: "assistant",
+                        content: answer
+                    }
                 );
 
-                while (chatHistory.length > 6) {
+                while (chatHistory.length > 4) {
                     chatHistory.shift();
                 }
             } catch (error) {
-                pendingMessage.textContent = "AI sedang tidak bisa digunakan.";
+                typingBubble.setAttribute("message", "Maaf, bantuan sedang tidak tersedia.");
             }
 
-            messages.scrollTop = messages.scrollHeight;
+            chatMessages.scrollTop = chatMessages.scrollHeight;
         });
 
-        showAuthState();
+        updateNavigation();
+        updateCartCount();
         loadProducts();
     </script>
 </body>
