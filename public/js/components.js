@@ -22,9 +22,6 @@ class CustomButton extends HTMLElement {
         const id = this.getAttribute("id") || "";
         const disabled = this.hasAttribute("disabled");
 
-        const previousButton = this.querySelector("button");
-        const previousClick = previousButton?._customClickHandler;
-
         this.innerHTML = `
             <button type="${type}" id="${id}" class="custom-btn custom-btn-${variant} ${size ? `custom-btn-${size}` : ""}" ${disabled ? "disabled" : ""}>
                 ${icon ? `<span class="custom-btn-icon">${icon}</span>` : ""}
@@ -34,18 +31,12 @@ class CustomButton extends HTMLElement {
 
         const button = this.querySelector("button");
 
-        const clickHandler = (event) => {
+        button.onclick = (event) => {
             this.dispatchEvent(new CustomEvent("custom-click", {
                 detail: event,
                 bubbles: true
             }));
         };
-
-        button._customClickHandler = clickHandler;
-
-        if (previousClick !== clickHandler) {
-            button.addEventListener("click", clickHandler);
-        }
     }
 }
 
@@ -106,12 +97,12 @@ class CustomCard extends HTMLElement {
         const button = this.querySelector(".product-card-button");
 
         if (button) {
-            button.addEventListener("click", (event) => {
+            button.onclick = (event) => {
                 this.dispatchEvent(new CustomEvent("card-action", {
                     detail: event,
                     bubbles: true
                 }));
-            });
+            };
         }
     }
 }

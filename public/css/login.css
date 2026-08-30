@@ -1,0 +1,39 @@
+body {
+    min-height: 100vh;
+    margin: 0;
+    display: grid;
+    place-items: center;
+    background: #f7f7f5;
+    color: #2f3d4a;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.login-wrapper {
+    width: min(410px, calc(100% - 30px));
+}
+
+.login-card {
+    padding: 32px;
+    border: 1px solid #dde2e7;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 12px 30px rgba(29, 43, 58, .06);
+}
+
+.login-brand {
+    margin-bottom: 7px;
+    color: #18324d;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.login-description {
+    margin: 0 0 28px;
+    color: #7b828c;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.login-submit {
+    width: 100%;
+}

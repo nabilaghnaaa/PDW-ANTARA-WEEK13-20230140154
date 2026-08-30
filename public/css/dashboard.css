@@ -1,0 +1,168 @@
+:root {
+    --navy: #18324d;
+    --navy-dark: #10263c;
+    --page: #f8f8f6;
+    --text: #2f3d4a;
+    --muted: #77828d;
+    --border: #dde2e7;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    margin: 0;
+    background: var(--page);
+    color: var(--text);
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.site-navbar {
+    background: #fff;
+    border-bottom: 1px solid var(--border);
+}
+
+.navbar-inner {
+    min-height: 66px;
+}
+
+.brand {
+    color: var(--navy);
+    text-decoration: none;
+    font-size: 21px;
+    font-weight: 700;
+}
+
+.navbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.hero-section {
+    padding: 42px 0 30px;
+}
+
+.hero-content {
+    max-width: 760px;
+}
+
+.hero-title {
+    max-width: 720px;
+    margin: 0;
+    color: var(--navy);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(31px, 4vw, 45px);
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -.8px;
+}
+
+.hero-description {
+    max-width: 590px;
+    margin: 13px 0 0;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+.hero-line {
+    width: 46px;
+    height: 3px;
+    margin-top: 18px;
+    background: #c58b70;
+}
+
+.products-section {
+    padding-bottom: 60px;
+}
+
+.products-header {
+    margin-bottom: 17px;
+    padding-bottom: 11px;
+    border-bottom: 1px solid var(--border);
+}
+
+.section-title {
+    margin: 0;
+    color: var(--navy);
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.section-description {
+    margin: 4px 0 0;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.loading-state,
+.empty-state {
+    padding: 60px 20px;
+    color: var(--muted);
+    text-align: center;
+    font-size: 13px;
+}
+
+@media (max-width: 991px) {
+    .product-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 767px) {
+    .navbar-inner {
+        min-height: 60px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+
+    .navbar-actions {
+        flex-wrap: wrap;
+        justify-content: flex-end;
+    }
+
+    .hero-section {
+        padding: 32px 0 26px;
+    }
+
+    .hero-title {
+        font-size: 32px;
+    }
+
+    .product-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 420px) {
+    .brand {
+        font-size: 18px;
+    }
+
+    .navbar-actions {
+        gap: 4px;
+    }
+
+    .navbar-actions .custom-btn {
+        min-height: 33px;
+        padding: 0 9px;
+        font-size: 11px;
+    }
+
+    .hero-title {
+        font-size: 29px;
+    }
+
+    .hero-description {
+        font-size: 13px;
+    }
+}

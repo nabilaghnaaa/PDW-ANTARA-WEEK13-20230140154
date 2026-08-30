@@ -14,27 +14,14 @@
     transition: background-color .18s ease, border-color .18s ease, color .18s ease;
 }
 
-.custom-btn:hover {
-    transform: none;
-}
-
-.custom-btn-primary {
-    background: #18324d;
-    color: #fff;
-    border-color: #18324d;
-}
-
-.custom-btn-primary:hover {
-    background: #10263c;
-    border-color: #10263c;
-}
-
+.custom-btn-primary,
 .custom-btn-dark {
     background: #18324d;
     color: #fff;
     border-color: #18324d;
 }
 
+.custom-btn-primary:hover,
 .custom-btn-dark:hover {
     background: #10263c;
     border-color: #10263c;
@@ -123,32 +110,6 @@
 }
 
 .custom-input::placeholder {
-    color: #9aa3ad;
-}
-
-.custom-textarea {
-    width: 100%;
-    min-height: 110px;
-    padding: 12px 14px;
-    box-sizing: border-box;
-    border: 1px solid #d6dce2;
-    border-radius: 6px;
-    outline: none;
-    resize: vertical;
-    background: #fff;
-    color: #2d3b49;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 13px;
-    line-height: 1.5;
-    transition: border-color .18s ease, box-shadow .18s ease;
-}
-
-.custom-textarea:focus {
-    border-color: #6d8195;
-    box-shadow: 0 0 0 2px rgba(24, 50, 77, .08);
-}
-
-.custom-textarea::placeholder {
     color: #9aa3ad;
 }
 
@@ -252,7 +213,6 @@
 
 .product-card-button-dark:hover {
     background: #10263c;
-    border-color: #10263c;
 }
 
 .product-card-button-light {
@@ -263,15 +223,13 @@
 
 .product-card-button-light:hover {
     background: #f4f6f8;
-    border-color: #c4ccd4;
 }
 
-custom-chat-bubble {
+.custom-chat-bubble {
     display: block;
     width: 100%;
     margin: 0 0 10px;
     padding: 0;
-    line-height: 0;
 }
 
 .chat-bubble-wrap {
@@ -279,7 +237,6 @@ custom-chat-bubble {
     align-items: flex-end;
     width: 100%;
     gap: 8px;
-    line-height: normal;
 }
 
 .chat-bubble-wrap-user {
@@ -303,26 +260,20 @@ custom-chat-bubble {
     color: #506171;
     font-size: 9px;
     font-weight: 700;
-    line-height: 1;
 }
 
 .chat-bubble {
-    display: block;
-    flex: 0 1 auto;
     width: auto;
     max-width: min(76%, 310px);
     min-width: 0;
-    min-height: 0;
     padding: 9px 11px;
     box-sizing: border-box;
     border-radius: 7px;
     font-size: 12px;
-    font-weight: 400;
     line-height: 1.55;
     text-align: left;
     white-space: normal;
     overflow-wrap: anywhere;
-    word-break: normal;
 }
 
 .chat-bubble-assistant {
@@ -339,16 +290,25 @@ custom-chat-bubble {
     color: #fff;
 }
 
-@media (max-width: 991px) {
-    .product-card-image-wrap {
-        height: 250px;
-    }
+.custom-textarea {
+    width: 100%;
+    min-height: 110px;
+    padding: 12px 14px;
+    box-sizing: border-box;
+    border: 1px solid #d6dce2;
+    border-radius: 6px;
+    outline: none;
+    resize: vertical;
+    background: #fff;
+    color: #2d3b49;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 13px;
+    line-height: 1.5;
 }
 
-@media (max-width: 767px) {
-    .product-card-image-wrap {
-        height: 270px;
-    }
+.custom-textarea:focus {
+    border-color: #6d8195;
+    box-shadow: 0 0 0 2px rgba(24, 50, 77, .08);
 }
 
 @media (max-width: 576px) {
@@ -366,12 +326,6 @@ custom-chat-bubble {
     }
 
     .chat-bubble {
-        max-width: calc(100vw - 100px);
-    }
-}
-
-@media (max-width: 400px) {
-    .product-card-image-wrap {
-        height: 260px;
+        max-width: calc(100vw - 95px);
     }
 }

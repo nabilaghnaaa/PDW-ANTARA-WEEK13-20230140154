@@ -1,0 +1,125 @@
+.chat-launcher {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 1000;
+}
+
+.chat-toggle {
+    min-height: 40px;
+    padding: 0 14px;
+    border: 1px solid #cbd2d9;
+    border-radius: 6px;
+    background: #fff;
+    color: #4f6171;
+    box-shadow: 0 5px 14px rgba(29, 43, 58, .08);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.chat-toggle:hover {
+    background: #f7f8f8;
+}
+
+.chat-panel {
+    position: fixed;
+    right: 20px;
+    bottom: 70px;
+    z-index: 1001;
+    display: none;
+    width: 360px;
+    max-width: calc(100vw - 24px);
+    overflow: hidden;
+    border: 1px solid #d5dbe1;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 12px 30px rgba(29, 43, 58, .12);
+}
+
+.chat-panel.show {
+    display: block;
+}
+
+.chat-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 13px 15px;
+    border-bottom: 1px solid #e4e7ea;
+}
+
+.chat-title {
+    margin: 0;
+    color: #18324d;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.chat-subtitle {
+    margin: 3px 0 0;
+    color: #8a949e;
+    font-size: 10px;
+}
+
+.chat-close {
+    padding: 2px 5px;
+    border: 0;
+    background: transparent;
+    color: #7f8993;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.chat-messages {
+    height: 315px;
+    padding: 14px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background: #f7f7f5;
+}
+
+.chat-input-wrap {
+    padding: 10px;
+    border-top: 1px solid #e4e7ea;
+}
+
+.chat-form {
+    display: flex;
+    gap: 7px;
+}
+
+.chat-input {
+    min-width: 0;
+    flex: 1;
+    min-height: 39px;
+    padding: 0 11px;
+    border: 1px solid #d5dbe1;
+    border-radius: 6px;
+    outline: none;
+    font-size: 12px;
+}
+
+.chat-send {
+    min-width: 62px;
+    border: 1px solid #18324d;
+    border-radius: 6px;
+    background: #18324d;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+@media (max-width: 767px) {
+    .chat-panel {
+        right: 12px;
+        bottom: 65px;
+        width: calc(100vw - 24px);
+    }
+
+    .chat-launcher {
+        right: 12px;
+        bottom: 12px;
+    }
+}
