@@ -20,11 +20,7 @@ const Product = {
     createCard(product) {
         const card = document.createElement("product-card");
 
-        card.setAttribute(
-            "image",
-            product.image || "https://via.placeholder.com/500x400?text=No+Image"
-        );
-
+        card.setAttribute("image", product.image || "https://via.placeholder.com/500x400?text=No+Image");
         card.setAttribute("title", product.name || "");
         card.setAttribute("description", product.description || "");
         card.setAttribute("category", product.category || "");
@@ -36,10 +32,7 @@ const Product = {
 
             card.addEventListener("product-action", () => {
                 Cart.add(product);
-
-                NotificationSystem.success(
-                    `${product.name} ditambahkan ke keranjang.`
-                );
+                NotificationSystem.success(`${product.name} ditambahkan ke keranjang.`);
             });
         }
 

@@ -87,11 +87,10 @@ async function updateProduct(req, res) {
             });
         }
 
-        const result = await productModel.updateProduct(id, product);
+        await productModel.updateProduct(id, product);
 
         res.json({
-            message: "Produk berhasil diubah",
-            ...result
+            message: "Produk berhasil diubah"
         });
     } catch (error) {
         res.status(500).json({

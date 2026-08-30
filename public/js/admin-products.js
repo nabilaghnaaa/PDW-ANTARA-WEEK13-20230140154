@@ -35,19 +35,13 @@ const AdminProduct = {
         return data;
     },
 
-    showModal(title) {
-        document.getElementById("modal-title").textContent = title;
-
-        this.modal.show();
-    },
-
     openAdd() {
         this.editingId = null;
 
-        const form = document.getElementById("product-form");
+        document.getElementById("product-form").reset();
+        document.getElementById("modal-title").textContent = "Tambah Produk";
 
-        form.reset();
-        this.showModal("Tambah Produk");
+        this.modal.show();
     },
 
     openEdit(product) {
@@ -61,7 +55,9 @@ const AdminProduct = {
         form.elements.category.value = product.category;
         form.elements.image.value = product.image || "";
 
-        this.showModal("Edit Produk");
+        document.getElementById("modal-title").textContent = "Edit Produk";
+
+        this.modal.show();
     },
 
     async load() {
@@ -86,15 +82,10 @@ const AdminProduct = {
                 row.innerHTML = `
                     <td>
                         <div class="admin-product">
-                            <img
-                                src="${product.image || "https://via.placeholder.com/60x60?text=No"}"
-                                alt="${product.name}"
-                                class="product-thumb"
-                            >
+                            <img src="${product.image || "https://via.placeholder.com/60x60?text=No"}" alt="${product.name}" class="product-thumb">
                             <strong>${product.name}</strong>
                         </div>
                     </td>
-
                     <td>${product.category}</td>
                     <td>${this.formatPrice(product.price)}</td>
                     <td class="description-cell">${product.description}</td>
@@ -127,17 +118,11 @@ const AdminProduct = {
                     }
 
                     try {
-                        await this.request(
-                            `/api/products/${product.id}`,
-                            {
-                                method: "DELETE"
-                            }
-                        );
+                        await this.request(`/api/products/${product.id}`, {
+                            method: "DELETE"
+                        });
 
-                        NotificationSystem.success(
-                            "Produk berhasil dihapus."
-                        );
-
+                        NotificationSystem.success("Produk berhasil dihapus.");
                         this.load();
                     } catch (error) {
                         NotificationSystem.error(error.message);
@@ -148,9 +133,7 @@ const AdminProduct = {
                 table.appendChild(row);
             });
         } catch (error) {
-            NotificationSystem.error(
-                "Gagal mengambil data produk."
-            );
+            NotificationSystem.error("Gagal mengambil data produk.");
         }
     },
 
@@ -158,9 +141,7 @@ const AdminProduct = {
         event.preventDefault();
 
         const form = event.target;
-        const data = Object.fromEntries(
-            new FormData(form)
-        );
+        const data = Object.fromEntries(new FormData(form));
 
         data.price = Number(data.price);
 
@@ -197,26 +178,22 @@ const AdminProduct = {
             document.getElementById("product-modal")
         );
 
-        document
-            .getElementById("btn-add")
-            .addEventListener("custom-click", () => {
-                this.openAdd();
-            });
+        document.getElementById("btn-add").addEventListener(
+            "custom-click",
+            () => this.openAdd()
+        );
 
-        document
-            .getElementById("product-form")
-            .addEventListener("submit", (event) => {
-                this.save(event);
-            });
+        document.getElementById("product-form").addEventListener(
+            "submit",
+            (event) => this.save(event)
+        );
 
         this.load();
     }
 };
 
 document.addEventListener("DOMContentLoaded", () => {
-    if (!Auth.isAdmin()) {
-        return;
+    if (Auth.isAdmin()) {
+        AdminProduct.init();
     }
-
-    AdminProduct.init();
 });

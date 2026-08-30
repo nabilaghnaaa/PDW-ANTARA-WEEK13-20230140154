@@ -1,6 +1,6 @@
 class CustomButton extends HTMLElement {
     static get observedAttributes() {
-        return ["text", "variant", "size", "type", "disabled"];
+        return ["text", "variant", "size", "icon", "type", "disabled"];
     }
 
     connectedCallback() {
@@ -17,16 +17,14 @@ class CustomButton extends HTMLElement {
         const text = this.getAttribute("text") || "Button";
         const variant = this.getAttribute("variant") || "primary";
         const size = this.getAttribute("size") || "";
+        const icon = this.getAttribute("icon") || "";
         const type = this.getAttribute("type") || "button";
         const disabled = this.hasAttribute("disabled");
 
         this.innerHTML = `
-            <button
-                type="${type}"
-                class="custom-btn custom-btn-${variant} ${size ? `custom-btn-${size}` : ""}"
-                ${disabled ? "disabled" : ""}
-            >
-                ${text}
+            <button type="${type}" class="custom-btn custom-btn-${variant} ${size ? `custom-btn-${size}` : ""}" ${disabled ? "disabled" : ""}>
+                ${icon ? `<span class="custom-btn-icon">${icon}</span>` : ""}
+                <span>${text}</span>
             </button>
         `;
 
@@ -56,15 +54,7 @@ class CustomInput extends HTMLElement {
         this.innerHTML = `
             <div class="custom-field">
                 ${label ? `<label for="${id}" class="custom-label">${label}</label>` : ""}
-                <input
-                    type="${type}"
-                    id="${id}"
-                    name="${name}"
-                    class="custom-input"
-                    placeholder="${placeholder}"
-                    value="${value}"
-                    ${required ? "required" : ""}
-                >
+                <input type="${type}" id="${id}" name="${name}" class="custom-input" placeholder="${placeholder}" value="${value}" ${required ? "required" : ""}>
             </div>
         `;
     }
@@ -76,8 +66,8 @@ class ProductCard extends HTMLElement {
     connectedCallback() {
         const image = this.getAttribute("image") || "";
         const title = this.getAttribute("title") || "";
-        const price = this.getAttribute("price") || "";
         const description = this.getAttribute("description") || "";
+        const price = this.getAttribute("price") || "";
         const category = this.getAttribute("category") || "";
         const hasButton = this.hasAttribute("button");
         const buttonText = this.getAttribute("button-text") || "Tambah";
@@ -85,26 +75,16 @@ class ProductCard extends HTMLElement {
         this.innerHTML = `
             <article class="product-card">
                 <div class="product-card-image-wrap">
-                    <img
-                        src="${image}"
-                        alt="${title}"
-                        class="product-card-image"
-                    >
+                    <img src="${image}" alt="${title}" class="product-card-image">
                     ${category ? `<span class="product-card-category">${category}</span>` : ""}
                 </div>
-
                 <div class="product-card-body">
                     <h3 class="product-card-title">${title}</h3>
                     <p class="product-card-description">${description}</p>
-
                     <div class="product-card-bottom">
                         <span class="product-card-price">${price}</span>
-
                         ${hasButton ? `
-                            <button
-                                type="button"
-                                class="product-card-button"
-                            >
+                            <button type="button" class="product-card-button">
                                 ${buttonText}
                             </button>
                         ` : ""}

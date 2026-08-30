@@ -67,7 +67,6 @@ const Auth = {
         const loginButton = document.getElementById("btn-login-nav");
         const logoutButton = document.getElementById("btn-logout");
         const cartButton = document.getElementById("btn-cart");
-
         const admin = this.isAdmin();
 
         if (adminButton) {
@@ -117,7 +116,7 @@ const Auth = {
                 await this.login(username, password);
                 window.location.href = "/";
             } catch (error) {
-                errorBox.textContent = error.message || "Login gagal.";
+                errorBox.textContent = error.message;
                 errorBox.style.display = "block";
             }
         });

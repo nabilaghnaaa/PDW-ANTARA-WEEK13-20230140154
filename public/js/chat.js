@@ -72,7 +72,6 @@ const Chat = {
             }
 
             this.show("user", message);
-
             input.value = "";
 
             const typing = document.createElement("custom-chat-bubble");
@@ -87,7 +86,6 @@ const Chat = {
                 const answer = await this.send(message);
 
                 typing.remove();
-
                 this.show("assistant", answer);
 
                 this.history.push(
@@ -115,3 +113,7 @@ const Chat = {
         });
     }
 };
+
+document.addEventListener("DOMContentLoaded", () => {
+    Chat.init();
+});

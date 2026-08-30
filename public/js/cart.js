@@ -3,9 +3,7 @@ const Cart = {
 
     get() {
         try {
-            const cart = JSON.parse(
-                localStorage.getItem(this.key) || "[]"
-            );
+            const cart = JSON.parse(localStorage.getItem(this.key) || "[]");
 
             return Array.isArray(cart) ? cart : [];
         } catch (error) {
@@ -18,18 +16,15 @@ const Cart = {
     },
 
     count() {
-        return this.get().reduce(
-            (total, item) => total + Number(item.quantity || 0),
-            0
-        );
+        return this.get().reduce((total, item) => {
+            return total + Number(item.quantity || 0);
+        }, 0);
     },
 
     total() {
-        return this.get().reduce(
-            (total, item) =>
-                total + Number(item.price || 0) * Number(item.quantity || 0),
-            0
-        );
+        return this.get().reduce((total, item) => {
+            return total + Number(item.price || 0) * Number(item.quantity || 0);
+        }, 0);
     },
 
     formatPrice(price) {
@@ -127,19 +122,12 @@ const Cart = {
             const row = document.createElement("div");
 
             row.className = "cart-item";
-
             row.innerHTML = `
-                <img
-                    src="${item.image || "https://via.placeholder.com/80x80?text=No"}"
-                    alt="${item.name}"
-                    class="cart-item-image"
-                >
+                <img src="${item.image || "https://via.placeholder.com/80x80?text=No"}" alt="${item.name}" class="cart-item-image">
 
                 <div class="cart-item-info">
                     <h3 class="cart-item-name">${item.name}</h3>
-                    <p class="cart-item-price">
-                        ${this.formatPrice(item.price)}
-                    </p>
+                    <p class="cart-item-price">${this.formatPrice(item.price)}</p>
                 </div>
 
                 <div class="cart-item-actions">
@@ -150,20 +138,18 @@ const Cart = {
                 </div>
             `;
 
-            row.querySelector(".cart-minus").addEventListener(
-                "click",
-                () => this.updateQuantity(item.id, item.quantity - 1)
-            );
+            row.querySelector(".cart-minus").addEventListener("click", () => {
+                this.updateQuantity(item.id, item.quantity - 1);
+            });
 
-            row.querySelector(".cart-plus").addEventListener(
-                "click",
-                () => this.updateQuantity(item.id, item.quantity + 1)
-            );
+            row.querySelector(".cart-plus").addEventListener("click", () => {
+                this.updateQuantity(item.id, item.quantity + 1);
+            });
 
-            row.querySelector(".cart-remove").addEventListener(
-                "click",
-                () => this.remove(item.id)
-            );
+            row.querySelector(".cart-remove").addEventListener("click", () => {
+                this.remove(item.id);
+                NotificationSystem.info(`${item.name} dihapus dari keranjang.`);
+            });
 
             container.appendChild(row);
         });
@@ -176,3 +162,28 @@ const Cart = {
         this.render();
     }
 };
+
+document.addEventListener("DOMContentLoaded", () => {
+    Cart.init();
+
+    const cartButton = document.getElementById("btn-cart");
+
+    if (cartButton) {
+        cartButton.addEventListener("custom-click", () => {
+            window.location.href = "/cart";
+        });
+    }
+
+    const checkoutButton = document.getElementById("cart-checkout");
+
+    if (checkoutButton) {
+        checkoutButton.addEventListener("custom-click", () => {
+            if (!Cart.get().length) {
+                NotificationSystem.warning("Keranjang masih kosong.");
+                return;
+            }
+
+            NotificationSystem.success("Produk siap diproses.");
+        });
+    }
+});

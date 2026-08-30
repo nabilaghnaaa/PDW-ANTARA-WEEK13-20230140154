@@ -208,7 +208,7 @@ Validasi meliputi:
 
 ## Dokumentasi Screenshot
 
-Seluruh screenshot hasil implementasi ditempatkan pada folder images
+Seluruh screenshot hasil implementasi ditempatkan pada folder `images/`.
 
 ### Admin Product
 
@@ -230,6 +230,11 @@ Seluruh screenshot hasil implementasi ditempatkan pada folder images
 
 ![Delete Product](images/delete-product.png)
 
+### Halaman Keranjang Belanja
+
+![Halaman Keranjang](images/cart.png)
+
+
 ### AI Chat Sesuai Konteks
 
 ![AI Context](images/ai-context.png)
@@ -237,12 +242,16 @@ Seluruh screenshot hasil implementasi ditempatkan pada folder images
 ### AI Guardrail
 
 ![AI Guardrail](images/ai-guardrail.png)
-    
+
 ## Ketentuan Tugas yang Dipenuhi
 
 | Ketentuan | Implementasi |
 |---|---|
 | Product | Katalog produk tersedia pada dashboard |
+| Reusable Product Card | Menggunakan Web Component `<product-card>` yang dapat digunakan berulang |
+| Global Notification | Menggunakan satu component notification terpusat |
+| Reusable Form Fields | Menggunakan `<custom-input>` untuk field teks dan password |
+| Halaman Keranjang | Tersedia halaman khusus keranjang belanja |
 | Admin Product | Halaman khusus pengelolaan produk |
 | Create | Admin dapat menambahkan produk |
 | Read | Admin dan pengunjung dapat melihat produk |
@@ -256,6 +265,7 @@ Seluruh screenshot hasil implementasi ditempatkan pada folder images
 | AI Chat | Terhubung dengan katalog produk |
 | AI Guardrail | Membatasi percakapan sesuai konteks TokoRe |
 | Responsive | Tampilan menyesuaikan desktop dan mobile |
+| DRY Code | Komponen dan logic dipisahkan berdasarkan fungsi agar dapat digunakan kembali |
 
 ## Catatan Penggunaan
 

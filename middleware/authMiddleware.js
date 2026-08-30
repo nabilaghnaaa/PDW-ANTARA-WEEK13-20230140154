@@ -8,8 +8,7 @@ function createToken(user) {
     sessions.set(token, {
         id: user.id,
         username: user.username,
-        role: user.role || "admin",
-        createdAt: Date.now()
+        role: user.role || "admin"
     });
 
     return token;

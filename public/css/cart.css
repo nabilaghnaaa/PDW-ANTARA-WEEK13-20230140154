@@ -115,6 +115,7 @@
 .cart-quantity-value {
     min-width: 22px;
     text-align: center;
+    color: #35424f;
     font-size: 12px;
     font-weight: 600;
 }
