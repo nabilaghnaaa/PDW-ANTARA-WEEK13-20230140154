@@ -6,7 +6,6 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 7px;
     font-size: 13px;
     font-weight: 600;
     line-height: 1;
@@ -14,15 +13,13 @@
     transition: background-color .18s ease, border-color .18s ease, color .18s ease;
 }
 
-.custom-btn-primary,
-.custom-btn-dark {
+.custom-btn-primary {
     background: #18324d;
     color: #fff;
     border-color: #18324d;
 }
 
-.custom-btn-primary:hover,
-.custom-btn-dark:hover {
+.custom-btn-primary:hover {
     background: #10263c;
     border-color: #10263c;
 }
@@ -49,33 +46,17 @@
     border-color: #d3aaa4;
 }
 
-.custom-btn-success {
-    background: #56796b;
-    color: #fff;
-    border-color: #56796b;
-}
-
-.custom-btn-success:hover {
-    background: #49695d;
-    border-color: #49695d;
-}
-
 .custom-btn-sm {
     min-height: 35px;
     padding: 0 12px;
-    font-size: 12px;
     border-radius: 6px;
+    font-size: 12px;
 }
 
 .custom-btn-lg {
     min-height: 46px;
     padding: 0 19px;
     font-size: 14px;
-}
-
-.custom-btn-icon {
-    display: inline-flex;
-    align-items: center;
 }
 
 .custom-field {
@@ -90,26 +71,39 @@
     font-weight: 600;
 }
 
-.custom-input {
+.custom-input,
+.custom-textarea {
     width: 100%;
-    min-height: 42px;
-    padding: 0 12px;
     box-sizing: border-box;
     border: 1px solid #d6dce2;
     border-radius: 6px;
     outline: none;
     background: #fff;
     color: #2d3b49;
+    font-family: Arial, Helvetica, sans-serif;
     font-size: 13px;
-    transition: border-color .18s ease, box-shadow .18s ease;
 }
 
-.custom-input:focus {
+.custom-input {
+    min-height: 42px;
+    padding: 0 12px;
+}
+
+.custom-textarea {
+    min-height: 110px;
+    padding: 12px 14px;
+    line-height: 1.5;
+    resize: vertical;
+}
+
+.custom-input:focus,
+.custom-textarea:focus {
     border-color: #6d8195;
     box-shadow: 0 0 0 2px rgba(24, 50, 77, .08);
 }
 
-.custom-input::placeholder {
+.custom-input::placeholder,
+.custom-textarea::placeholder {
     color: #9aa3ad;
 }
 
@@ -139,7 +133,6 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: center;
     transition: transform .35s ease;
 }
 
@@ -197,39 +190,23 @@
 .product-card-button {
     min-height: 35px;
     padding: 0 12px;
-    border: 1px solid transparent;
+    border: 1px solid #18324d;
     border-radius: 6px;
+    background: #18324d;
+    color: #fff;
     cursor: pointer;
     font-size: 11px;
     font-weight: 600;
-    transition: background-color .18s ease, border-color .18s ease, color .18s ease;
 }
 
-.product-card-button-dark {
-    background: #18324d;
-    color: #fff;
-    border-color: #18324d;
-}
-
-.product-card-button-dark:hover {
+.product-card-button:hover {
     background: #10263c;
-}
-
-.product-card-button-light {
-    background: #fff;
-    color: #4f6171;
-    border-color: #d2d8df;
-}
-
-.product-card-button-light:hover {
-    background: #f4f6f8;
 }
 
 .custom-chat-bubble {
     display: block;
     width: 100%;
     margin: 0 0 10px;
-    padding: 0;
 }
 
 .chat-bubble-wrap {
@@ -253,7 +230,6 @@
     height: 25px;
     display: grid;
     place-items: center;
-    box-sizing: border-box;
     border: 1px solid #cfd6dd;
     border-radius: 5px;
     background: #f2f3f3;
@@ -265,10 +241,9 @@
 .chat-bubble {
     width: auto;
     max-width: min(76%, 310px);
-    min-width: 0;
     padding: 9px 11px;
-    box-sizing: border-box;
     border-radius: 7px;
+    box-sizing: border-box;
     font-size: 12px;
     line-height: 1.55;
     text-align: left;
@@ -290,25 +265,54 @@
     color: #fff;
 }
 
-.custom-textarea {
-    width: 100%;
-    min-height: 110px;
-    padding: 12px 14px;
-    box-sizing: border-box;
-    border: 1px solid #d6dce2;
-    border-radius: 6px;
-    outline: none;
-    resize: vertical;
-    background: #fff;
-    color: #2d3b49;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 13px;
-    line-height: 1.5;
+app-notification {
+    position: fixed;
+    top: 18px;
+    right: 18px;
+    z-index: 3000;
+    pointer-events: none;
 }
 
-.custom-textarea:focus {
-    border-color: #6d8195;
-    box-shadow: 0 0 0 2px rgba(24, 50, 77, .08);
+.notification-box {
+    max-width: 330px;
+    padding: 12px 15px;
+    border: 1px solid #d8dde3;
+    border-radius: 7px;
+    background: #fff;
+    color: #44515e;
+    box-shadow: 0 8px 22px rgba(29, 43, 58, .12);
+    font-size: 12px;
+    line-height: 1.5;
+    opacity: 0;
+    transform: translateY(-6px);
+    transition: opacity .2s ease, transform .2s ease;
+}
+
+.notification-show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.notification-success {
+    border-color: #b8d0c2;
+}
+
+.notification-error {
+    border-color: #ddc0bc;
+}
+
+.notification-warning {
+    border-color: #ddd0ae;
+}
+
+.notification-info {
+    border-color: #c1ced9;
+}
+
+@media (max-width: 991px) {
+    .product-card-image-wrap {
+        height: 250px;
+    }
 }
 
 @media (max-width: 576px) {
@@ -327,5 +331,15 @@
 
     .chat-bubble {
         max-width: calc(100vw - 95px);
+    }
+
+    app-notification {
+        right: 12px;
+        left: 12px;
+        top: 12px;
+    }
+
+    .notification-box {
+        max-width: none;
     }
 }

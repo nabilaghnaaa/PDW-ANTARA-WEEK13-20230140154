@@ -3,11 +3,12 @@ const Chat = {
 
     show(role, message) {
         const container = document.getElementById("chat-messages");
-        const bubble = document.createElement("custom-chat-bubble");
 
         if (!container) {
             return;
         }
+
+        const bubble = document.createElement("custom-chat-bubble");
 
         bubble.setAttribute("role", role);
         bubble.setAttribute("message", message);
@@ -31,10 +32,14 @@ const Chat = {
         const data = await response.json();
 
         if (!response.ok) {
-            throw new Error(data.message || "AI tidak tersedia");
+            throw new Error(
+                data.message || "Layanan AI tidak tersedia"
+            );
         }
 
-        return data.answer || data.message || "Maaf, aku belum bisa menjawab pertanyaan tersebut.";
+        return data.answer ||
+            data.message ||
+            "Maaf, aku belum bisa menjawab pertanyaan tersebut.";
     },
 
     init() {
@@ -43,26 +48,23 @@ const Chat = {
         const close = document.getElementById("chat-close");
         const form = document.getElementById("chat-form");
 
-        if (toggle) {
-            toggle.addEventListener("click", () => {
-                panel.classList.toggle("show");
-            });
-        }
-
-        if (close) {
-            close.addEventListener("click", () => {
-                panel.classList.remove("show");
-            });
-        }
-
-        if (!form) {
+        if (!panel || !toggle || !close || !form) {
             return;
         }
+
+        toggle.addEventListener("click", () => {
+            panel.classList.toggle("show");
+        });
+
+        close.addEventListener("click", () => {
+            panel.classList.remove("show");
+        });
 
         form.addEventListener("submit", async (event) => {
             event.preventDefault();
 
             const input = document.getElementById("chat-input");
+            const messages = document.getElementById("chat-messages");
             const message = input.value.trim();
 
             if (!message) {
@@ -70,6 +72,7 @@ const Chat = {
             }
 
             this.show("user", message);
+
             input.value = "";
 
             const typing = document.createElement("custom-chat-bubble");
@@ -77,12 +80,14 @@ const Chat = {
             typing.setAttribute("role", "assistant");
             typing.setAttribute("message", "Sedang mengetik...");
 
-            document.getElementById("chat-messages").appendChild(typing);
+            messages.appendChild(typing);
+            messages.scrollTop = messages.scrollHeight;
 
             try {
                 const answer = await this.send(message);
 
                 typing.remove();
+
                 this.show("assistant", answer);
 
                 this.history.push(
@@ -100,10 +105,13 @@ const Chat = {
                     this.history.shift();
                 }
             } catch (error) {
-                typing.setAttribute("message", "Maaf, bantuan sedang tidak tersedia.");
+                typing.setAttribute(
+                    "message",
+                    "Maaf, bantuan sedang tidak tersedia."
+                );
             }
 
-            document.getElementById("chat-messages").scrollTop = document.getElementById("chat-messages").scrollHeight;
+            messages.scrollTop = messages.scrollHeight;
         });
     }
 };

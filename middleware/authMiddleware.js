@@ -1,14 +1,14 @@
 const crypto = require("crypto");
 
-const tokens = new Map();
+const sessions = new Map();
 
 function createToken(user) {
     const token = crypto.randomBytes(32).toString("hex");
 
-    tokens.set(token, {
+    sessions.set(token, {
         id: user.id,
         username: user.username,
-        role: user.role,
+        role: user.role || "admin",
         createdAt: Date.now()
     });
 
@@ -16,13 +16,20 @@ function createToken(user) {
 }
 
 function removeToken(token) {
-    tokens.delete(token);
+    sessions.delete(token);
+}
+
+function getSession(token) {
+    return sessions.get(token);
 }
 
 function requireAdmin(req, res, next) {
-    const header = req.headers.authorization || "";
-    const token = header.startsWith("Bearer ") ? header.slice(7) : "";
-    const session = tokens.get(token);
+    const authorization = req.headers.authorization || "";
+    const token = authorization.startsWith("Bearer ")
+        ? authorization.slice(7)
+        : "";
+
+    const session = getSession(token);
 
     if (!session || session.role !== "admin") {
         return res.status(401).json({
@@ -37,5 +44,6 @@ function requireAdmin(req, res, next) {
 module.exports = {
     createToken,
     removeToken,
+    getSession,
     requireAdmin
 };

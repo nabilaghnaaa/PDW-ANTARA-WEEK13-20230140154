@@ -1,6 +1,6 @@
 class CustomButton extends HTMLElement {
     static get observedAttributes() {
-        return ["text", "variant", "size", "icon", "type", "disabled"];
+        return ["text", "variant", "size", "type", "disabled"];
     }
 
     connectedCallback() {
@@ -17,26 +17,27 @@ class CustomButton extends HTMLElement {
         const text = this.getAttribute("text") || "Button";
         const variant = this.getAttribute("variant") || "primary";
         const size = this.getAttribute("size") || "";
-        const icon = this.getAttribute("icon") || "";
         const type = this.getAttribute("type") || "button";
-        const id = this.getAttribute("id") || "";
         const disabled = this.hasAttribute("disabled");
 
         this.innerHTML = `
-            <button type="${type}" id="${id}" class="custom-btn custom-btn-${variant} ${size ? `custom-btn-${size}` : ""}" ${disabled ? "disabled" : ""}>
-                ${icon ? `<span class="custom-btn-icon">${icon}</span>` : ""}
-                <span>${text}</span>
+            <button
+                type="${type}"
+                class="custom-btn custom-btn-${variant} ${size ? `custom-btn-${size}` : ""}"
+                ${disabled ? "disabled" : ""}
+            >
+                ${text}
             </button>
         `;
 
         const button = this.querySelector("button");
 
-        button.onclick = (event) => {
+        button.addEventListener("click", (event) => {
             this.dispatchEvent(new CustomEvent("custom-click", {
                 detail: event,
                 bubbles: true
             }));
-        };
+        });
     }
 }
 
@@ -55,7 +56,15 @@ class CustomInput extends HTMLElement {
         this.innerHTML = `
             <div class="custom-field">
                 ${label ? `<label for="${id}" class="custom-label">${label}</label>` : ""}
-                <input type="${type}" id="${id}" name="${name}" class="custom-input" placeholder="${placeholder}" value="${value}" ${required ? "required" : ""}>
+                <input
+                    type="${type}"
+                    id="${id}"
+                    name="${name}"
+                    class="custom-input"
+                    placeholder="${placeholder}"
+                    value="${value}"
+                    ${required ? "required" : ""}
+                >
             </div>
         `;
     }
@@ -63,29 +72,39 @@ class CustomInput extends HTMLElement {
 
 customElements.define("custom-input", CustomInput);
 
-class CustomCard extends HTMLElement {
+class ProductCard extends HTMLElement {
     connectedCallback() {
         const image = this.getAttribute("image") || "";
-        const category = this.getAttribute("category") || "";
         const title = this.getAttribute("title") || "";
-        const description = this.getAttribute("description") || "";
         const price = this.getAttribute("price") || "";
-        const buttonText = this.getAttribute("button-text") || "";
-        const buttonVariant = this.getAttribute("button-variant") || "dark";
+        const description = this.getAttribute("description") || "";
+        const category = this.getAttribute("category") || "";
+        const hasButton = this.hasAttribute("button");
+        const buttonText = this.getAttribute("button-text") || "Tambah";
 
         this.innerHTML = `
             <article class="product-card">
                 <div class="product-card-image-wrap">
-                    <img src="${image}" alt="${title}" class="product-card-image">
+                    <img
+                        src="${image}"
+                        alt="${title}"
+                        class="product-card-image"
+                    >
                     ${category ? `<span class="product-card-category">${category}</span>` : ""}
                 </div>
+
                 <div class="product-card-body">
                     <h3 class="product-card-title">${title}</h3>
                     <p class="product-card-description">${description}</p>
+
                     <div class="product-card-bottom">
-                        <div class="product-card-price">${price}</div>
-                        ${buttonText ? `
-                            <button type="button" class="product-card-button product-card-button-${buttonVariant}">
+                        <span class="product-card-price">${price}</span>
+
+                        ${hasButton ? `
+                            <button
+                                type="button"
+                                class="product-card-button"
+                            >
                                 ${buttonText}
                             </button>
                         ` : ""}
@@ -97,17 +116,17 @@ class CustomCard extends HTMLElement {
         const button = this.querySelector(".product-card-button");
 
         if (button) {
-            button.onclick = (event) => {
-                this.dispatchEvent(new CustomEvent("card-action", {
+            button.addEventListener("click", (event) => {
+                this.dispatchEvent(new CustomEvent("product-action", {
                     detail: event,
                     bubbles: true
                 }));
-            };
+            });
         }
     }
 }
 
-customElements.define("custom-card", CustomCard);
+customElements.define("product-card", ProductCard);
 
 class CustomChatBubble extends HTMLElement {
     connectedCallback() {
@@ -126,3 +145,30 @@ class CustomChatBubble extends HTMLElement {
 }
 
 customElements.define("custom-chat-bubble", CustomChatBubble);
+
+class AppNotification extends HTMLElement {
+    connectedCallback() {
+        this.innerHTML = `
+            <div class="notification-box"></div>
+        `;
+    }
+
+    show(message, type = "info", duration = 2800) {
+        const box = this.querySelector(".notification-box");
+
+        box.className = `notification-box notification-${type}`;
+        box.textContent = message;
+
+        requestAnimationFrame(() => {
+            box.classList.add("notification-show");
+        });
+
+        clearTimeout(this.hideTimer);
+
+        this.hideTimer = setTimeout(() => {
+            box.classList.remove("notification-show");
+        }, duration);
+    }
+}
+
+customElements.define("app-notification", AppNotification);

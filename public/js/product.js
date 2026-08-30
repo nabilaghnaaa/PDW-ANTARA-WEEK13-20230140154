@@ -18,20 +18,28 @@ const Product = {
     },
 
     createCard(product) {
-        const card = document.createElement("custom-card");
+        const card = document.createElement("product-card");
 
-        card.setAttribute("image", product.image || "https://via.placeholder.com/500x400?text=No+Image");
-        card.setAttribute("category", product.category || "");
+        card.setAttribute(
+            "image",
+            product.image || "https://via.placeholder.com/500x400?text=No+Image"
+        );
+
         card.setAttribute("title", product.name || "");
         card.setAttribute("description", product.description || "");
+        card.setAttribute("category", product.category || "");
         card.setAttribute("price", this.formatPrice(product.price || 0));
 
         if (!Auth.isAdmin()) {
+            card.setAttribute("button", "");
             card.setAttribute("button-text", "Tambah");
 
-            card.addEventListener("card-action", () => {
+            card.addEventListener("product-action", () => {
                 Cart.add(product);
-                alert(`${product.name} berhasil ditambahkan ke keranjang.`);
+
+                NotificationSystem.success(
+                    `${product.name} ditambahkan ke keranjang.`
+                );
             });
         }
 
@@ -52,7 +60,13 @@ const Product = {
 
             container.innerHTML = "";
             loading.style.display = "none";
-            empty.style.display = products.length ? "none" : "block";
+
+            if (!products.length) {
+                empty.style.display = "block";
+                return;
+            }
+
+            empty.style.display = "none";
 
             products.forEach((product) => {
                 container.appendChild(this.createCard(product));
@@ -60,7 +74,7 @@ const Product = {
         } catch (error) {
             loading.style.display = "none";
             empty.style.display = "block";
-            empty.textContent = "Gagal mengambil data produk.";
+            empty.textContent = "Produk tidak dapat dimuat.";
         }
     }
 };

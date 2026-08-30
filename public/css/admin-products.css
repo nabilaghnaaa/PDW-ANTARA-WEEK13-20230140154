@@ -13,6 +13,9 @@ body {
 
 .admin-nav-inner {
     min-height: 66px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .admin-brand {
@@ -24,6 +27,13 @@ body {
 
 .page-head {
     padding: 38px 0 24px;
+}
+
+.page-head-content {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px;
 }
 
 .page-title {
@@ -58,7 +68,6 @@ body {
     color: #76818c;
     font-size: 11px;
     font-weight: 700;
-    text-transform: uppercase;
 }
 
 .admin-table td {
@@ -79,7 +88,6 @@ body {
     object-fit: cover;
     border: 1px solid #dde2e7;
     border-radius: 6px;
-    background: #f2f0eb;
 }
 
 .description-cell {
@@ -94,9 +102,32 @@ body {
     gap: 6px;
 }
 
+.empty-admin {
+    padding: 50px;
+    color: #77828d;
+    text-align: center;
+}
+
+.modal-content {
+    border: 1px solid #dde2e7;
+    border-radius: 8px;
+}
+
+.modal-header,
+.modal-body,
+.modal-footer {
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
 @media (max-width: 767px) {
     .page-head {
         padding-top: 28px;
+    }
+
+    .page-head-content {
+        align-items: flex-start;
+        flex-direction: column;
     }
 
     .page-title {

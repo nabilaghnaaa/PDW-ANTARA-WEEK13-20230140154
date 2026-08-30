@@ -1,5 +1,6 @@
 const AdminProduct = {
     editingId: null,
+    modal: null,
 
     formatPrice(price) {
         return new Intl.NumberFormat("id-ID", {
@@ -7,18 +8,6 @@ const AdminProduct = {
             currency: "IDR",
             maximumFractionDigits: 0
         }).format(Number(price));
-    },
-
-    message(text, type = "success") {
-        const box = document.getElementById("page-message");
-
-        box.className = `alert alert-${type}`;
-        box.textContent = text;
-        box.style.display = "block";
-
-        setTimeout(() => {
-            box.style.display = "none";
-        }, 2500);
     },
 
     async request(url, options = {}) {
@@ -46,14 +35,19 @@ const AdminProduct = {
         return data;
     },
 
+    showModal(title) {
+        document.getElementById("modal-title").textContent = title;
+
+        this.modal.show();
+    },
+
     openAdd() {
         this.editingId = null;
 
-        document.getElementById("product-form").reset();
-        document.getElementById("modal-title").textContent = "Tambah Produk";
-        document.getElementById("description").value = "";
+        const form = document.getElementById("product-form");
 
-        bootstrap.Modal.getOrCreateInstance(document.getElementById("product-modal")).show();
+        form.reset();
+        this.showModal("Tambah Produk");
     },
 
     openEdit(product) {
@@ -67,9 +61,7 @@ const AdminProduct = {
         form.elements.category.value = product.category;
         form.elements.image.value = product.image || "";
 
-        document.getElementById("modal-title").textContent = "Edit Produk";
-
-        bootstrap.Modal.getOrCreateInstance(document.getElementById("product-modal")).show();
+        this.showModal("Edit Produk");
     },
 
     async load() {
@@ -78,6 +70,11 @@ const AdminProduct = {
 
         try {
             const response = await fetch("/api/products");
+
+            if (!response.ok) {
+                throw new Error("Gagal mengambil produk");
+            }
+
             const products = await response.json();
 
             table.innerHTML = "";
@@ -89,54 +86,71 @@ const AdminProduct = {
                 row.innerHTML = `
                     <td>
                         <div class="admin-product">
-                            <img src="${product.image || "https://via.placeholder.com/70x70?text=No"}" alt="${product.name}" class="product-thumb">
+                            <img
+                                src="${product.image || "https://via.placeholder.com/60x60?text=No"}"
+                                alt="${product.name}"
+                                class="product-thumb"
+                            >
                             <strong>${product.name}</strong>
                         </div>
                     </td>
+
                     <td>${product.category}</td>
                     <td>${this.formatPrice(product.price)}</td>
                     <td class="description-cell">${product.description}</td>
-                    <td></td>
+                    <td>
+                        <div class="action-group"></div>
+                    </td>
                 `;
 
-                const actions = document.createElement("div");
-                actions.className = "action-group";
+                const actions = row.querySelector(".action-group");
 
                 const edit = document.createElement("custom-button");
+
                 edit.setAttribute("text", "Edit");
                 edit.setAttribute("variant", "light");
                 edit.setAttribute("size", "sm");
+
                 edit.addEventListener("custom-click", () => {
                     this.openEdit(product);
                 });
 
                 const remove = document.createElement("custom-button");
+
                 remove.setAttribute("text", "Hapus");
                 remove.setAttribute("variant", "danger");
                 remove.setAttribute("size", "sm");
+
                 remove.addEventListener("custom-click", async () => {
                     if (!confirm(`Hapus produk ${product.name}?`)) {
                         return;
                     }
 
                     try {
-                        await this.request(`/api/products/${product.id}`, {
-                            method: "DELETE"
-                        });
+                        await this.request(
+                            `/api/products/${product.id}`,
+                            {
+                                method: "DELETE"
+                            }
+                        );
 
-                        this.message("Produk berhasil dihapus.");
+                        NotificationSystem.success(
+                            "Produk berhasil dihapus."
+                        );
+
                         this.load();
                     } catch (error) {
-                        this.message(error.message, "danger");
+                        NotificationSystem.error(error.message);
                     }
                 });
 
                 actions.append(edit, remove);
-                row.lastElementChild.appendChild(actions);
                 table.appendChild(row);
             });
         } catch (error) {
-            this.message("Gagal mengambil data produk.", "danger");
+            NotificationSystem.error(
+                "Gagal mengambil data produk."
+            );
         }
     },
 
@@ -144,7 +158,9 @@ const AdminProduct = {
         event.preventDefault();
 
         const form = event.target;
-        const data = Object.fromEntries(new FormData(form));
+        const data = Object.fromEntries(
+            new FormData(form)
+        );
 
         data.price = Number(data.price);
 
@@ -152,7 +168,9 @@ const AdminProduct = {
             ? `/api/products/${this.editingId}`
             : "/api/products";
 
-        const method = this.editingId ? "PUT" : "POST";
+        const method = this.editingId
+            ? "PUT"
+            : "POST";
 
         try {
             await this.request(url, {
@@ -160,9 +178,9 @@ const AdminProduct = {
                 body: JSON.stringify(data)
             });
 
-            bootstrap.Modal.getInstance(document.getElementById("product-modal")).hide();
+            this.modal.hide();
 
-            this.message(
+            NotificationSystem.success(
                 this.editingId
                     ? "Produk berhasil diubah."
                     : "Produk berhasil ditambahkan."
@@ -170,19 +188,35 @@ const AdminProduct = {
 
             this.load();
         } catch (error) {
-            this.message(error.message, "danger");
+            NotificationSystem.error(error.message);
         }
+    },
+
+    init() {
+        this.modal = new bootstrap.Modal(
+            document.getElementById("product-modal")
+        );
+
+        document
+            .getElementById("btn-add")
+            .addEventListener("custom-click", () => {
+                this.openAdd();
+            });
+
+        document
+            .getElementById("product-form")
+            .addEventListener("submit", (event) => {
+                this.save(event);
+            });
+
+        this.load();
     }
 };
 
 document.addEventListener("DOMContentLoaded", () => {
-    AdminProduct.load();
+    if (!Auth.isAdmin()) {
+        return;
+    }
 
-    document.getElementById("btn-add").addEventListener("custom-click", () => {
-        AdminProduct.openAdd();
-    });
-
-    document.getElementById("product-form").addEventListener("submit", (event) => {
-        AdminProduct.save(event);
-    });
+    AdminProduct.init();
 });

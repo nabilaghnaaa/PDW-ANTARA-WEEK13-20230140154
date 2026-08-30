@@ -3,7 +3,9 @@ const Cart = {
 
     get() {
         try {
-            const cart = JSON.parse(localStorage.getItem(this.key) || "[]");
+            const cart = JSON.parse(
+                localStorage.getItem(this.key) || "[]"
+            );
 
             return Array.isArray(cart) ? cart : [];
         } catch (error) {
@@ -16,15 +18,18 @@ const Cart = {
     },
 
     count() {
-        return this.get().reduce((total, item) => {
-            return total + Number(item.quantity || 0);
-        }, 0);
+        return this.get().reduce(
+            (total, item) => total + Number(item.quantity || 0),
+            0
+        );
     },
 
     total() {
-        return this.get().reduce((total, item) => {
-            return total + Number(item.price || 0) * Number(item.quantity || 0);
-        }, 0);
+        return this.get().reduce(
+            (total, item) =>
+                total + Number(item.price || 0) * Number(item.quantity || 0),
+            0
+        );
     },
 
     formatPrice(price) {
@@ -35,19 +40,11 @@ const Cart = {
         }).format(Number(price));
     },
 
-    updateCount() {
-        const button = document.getElementById("btn-cart");
-
-        if (!button || Auth.isAdmin()) {
-            return;
-        }
-
-        button.setAttribute("text", `Keranjang (${this.count()})`);
-    },
-
     add(product) {
         const cart = this.get();
-        const existing = cart.find((item) => Number(item.id) === Number(product.id));
+        const existing = cart.find(
+            (item) => Number(item.id) === Number(product.id)
+        );
 
         if (existing) {
             existing.quantity += 1;
@@ -63,119 +60,119 @@ const Cart = {
 
         this.save(cart);
         this.updateCount();
-        this.render();
     },
 
-    remove(productId) {
-        const cart = this.get().filter((item) => Number(item.id) !== Number(productId));
+    remove(id) {
+        const cart = this.get().filter(
+            (item) => Number(item.id) !== Number(id)
+        );
 
         this.save(cart);
         this.updateCount();
         this.render();
     },
 
-    render() {
-        const body = document.getElementById("cart-body");
-        const totalElement = document.getElementById("cart-total");
+    updateQuantity(id, quantity) {
+        const cart = this.get();
+        const item = cart.find(
+            (product) => Number(product.id) === Number(id)
+        );
 
-        if (!body || !totalElement) {
+        if (!item) {
+            return;
+        }
+
+        item.quantity = Math.max(1, Number(quantity));
+
+        this.save(cart);
+        this.updateCount();
+        this.render();
+    },
+
+    updateCount() {
+        const button = document.getElementById("btn-cart");
+
+        if (!button) {
+            return;
+        }
+
+        button.setAttribute(
+            "text",
+            `Keranjang (${this.count()})`
+        );
+    },
+
+    render() {
+        const container = document.getElementById("cart-items");
+        const empty = document.getElementById("cart-empty");
+        const total = document.getElementById("cart-total");
+
+        if (!container || !empty || !total) {
             return;
         }
 
         const cart = this.get();
 
-        if (!cart.length) {
-            body.innerHTML = `
-                <div class="cart-empty">
-                    Keranjang masih kosong.
-                </div>
-            `;
+        container.innerHTML = "";
 
-            totalElement.textContent = "Rp0";
+        if (!cart.length) {
+            empty.style.display = "block";
+            total.textContent = "Rp0";
             return;
         }
 
-        body.innerHTML = "";
+        empty.style.display = "none";
 
         cart.forEach((item) => {
-            const element = document.createElement("div");
+            const row = document.createElement("div");
 
-            element.className = "cart-item";
-            element.innerHTML = `
-                <img src="${item.image || "https://via.placeholder.com/70x70?text=No"}" alt="${item.name}" class="cart-item-image">
+            row.className = "cart-item";
+
+            row.innerHTML = `
+                <img
+                    src="${item.image || "https://via.placeholder.com/80x80?text=No"}"
+                    alt="${item.name}"
+                    class="cart-item-image"
+                >
+
                 <div class="cart-item-info">
-                    <p class="cart-item-name">${item.name}</p>
-                    <p class="cart-item-price">${this.formatPrice(item.price)} × ${item.quantity}</p>
+                    <h3 class="cart-item-name">${item.name}</h3>
+                    <p class="cart-item-price">
+                        ${this.formatPrice(item.price)}
+                    </p>
                 </div>
-                <button type="button" class="cart-remove">Hapus</button>
+
+                <div class="cart-item-actions">
+                    <button type="button" class="cart-quantity cart-minus">−</button>
+                    <span class="cart-quantity-value">${item.quantity}</span>
+                    <button type="button" class="cart-quantity cart-plus">+</button>
+                    <button type="button" class="cart-remove">Hapus</button>
+                </div>
             `;
 
-            element.querySelector(".cart-remove").addEventListener("click", () => {
-                this.remove(item.id);
-            });
+            row.querySelector(".cart-minus").addEventListener(
+                "click",
+                () => this.updateQuantity(item.id, item.quantity - 1)
+            );
 
-            body.appendChild(element);
+            row.querySelector(".cart-plus").addEventListener(
+                "click",
+                () => this.updateQuantity(item.id, item.quantity + 1)
+            );
+
+            row.querySelector(".cart-remove").addEventListener(
+                "click",
+                () => this.remove(item.id)
+            );
+
+            container.appendChild(row);
         });
 
-        totalElement.textContent = this.formatPrice(this.total());
-    },
-
-    open() {
-        const modal = document.getElementById("cart-modal");
-
-        if (!modal || Auth.isAdmin()) {
-            return;
-        }
-
-        this.render();
-        modal.classList.add("show");
-    },
-
-    close() {
-        const modal = document.getElementById("cart-modal");
-
-        if (modal) {
-            modal.classList.remove("show");
-        }
+        total.textContent = this.formatPrice(this.total());
     },
 
     init() {
-        const button = document.getElementById("btn-cart");
-        const closeButton = document.getElementById("cart-close");
-        const modal = document.getElementById("cart-modal");
-        const checkoutButton = document.getElementById("cart-checkout");
-
-        if (button) {
-            button.addEventListener("custom-click", () => {
-                this.open();
-            });
-        }
-
-        if (closeButton) {
-            closeButton.addEventListener("click", () => {
-                this.close();
-            });
-        }
-
-        if (modal) {
-            modal.addEventListener("click", (event) => {
-                if (event.target === modal) {
-                    this.close();
-                }
-            });
-        }
-
-        if (checkoutButton) {
-            checkoutButton.addEventListener("custom-click", () => {
-                if (!this.get().length) {
-                    alert("Keranjang masih kosong.");
-                    return;
-                }
-
-                alert("Produk sudah siap diproses.");
-            });
-        }
-
         this.updateCount();
+        this.render();
     }
 };

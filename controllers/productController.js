@@ -11,7 +11,13 @@ function normalizeProduct(body) {
 }
 
 function validateProduct(product) {
-    if (!product.name || !product.description || !product.category || !Number.isFinite(product.price) || product.price < 0) {
+    if (
+        !product.name ||
+        !product.description ||
+        !product.category ||
+        !Number.isFinite(product.price) ||
+        product.price < 0
+    ) {
         return "Nama, deskripsi, harga, dan kategori wajib diisi dengan benar";
     }
 
@@ -24,7 +30,9 @@ function validateProduct(product) {
 
 async function listProducts(req, res) {
     try {
-        res.json(await productModel.getAllProducts());
+        const products = await productModel.getAllProducts();
+
+        res.json(products);
     } catch (error) {
         res.status(500).json({
             message: "Gagal mengambil data produk"
@@ -43,7 +51,9 @@ async function createProduct(req, res) {
     }
 
     try {
-        res.status(201).json(await productModel.createProduct(product));
+        const result = await productModel.createProduct(product);
+
+        res.status(201).json(result);
     } catch (error) {
         res.status(500).json({
             message: "Gagal menambahkan produk"

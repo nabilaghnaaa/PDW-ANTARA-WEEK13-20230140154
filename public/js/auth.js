@@ -49,13 +49,11 @@ const Auth = {
     },
 
     async logout() {
-        const token = this.getToken();
-
         try {
             await fetch("/logout", {
                 method: "POST",
                 headers: {
-                    Authorization: `Bearer ${token}`
+                    Authorization: `Bearer ${this.getToken()}`
                 }
             });
         } finally {

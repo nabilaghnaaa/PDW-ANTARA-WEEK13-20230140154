@@ -1,8 +1,12 @@
 const userModel = require("../models/userModel");
-const { createToken, removeToken } = require("../middleware/authMiddleware");
+const {
+    createToken,
+    removeToken
+} = require("../middleware/authMiddleware");
 
 async function loginUser(req, res) {
-    const { username, password } = req.body;
+    const username = String(req.body.username || "").trim();
+    const password = String(req.body.password || "");
 
     if (!username || !password) {
         return res.status(400).json({
@@ -11,41 +15,45 @@ async function loginUser(req, res) {
     }
 
     try {
-        const user = await userModel.getUserByUsername(username.trim());
+        const user = await userModel.getUserByUsername(username);
 
-        if (!user || user.password !== password) {
+        if (!user || user.password !== password || user.role !== "admin") {
             return res.status(401).json({
-                message: "Username atau password salah"
+                message: "Username atau password admin salah"
             });
         }
 
         const token = createToken(user);
 
-        res.status(200).json({
-            message: "Success",
+        res.json({
+            message: "Login berhasil",
             token,
             user: {
                 id: user.id,
                 username: user.username,
-                role: user.role || "admin"
+                role: "admin"
             }
         });
     } catch (error) {
+        console.error("Login error:", error);
+
         res.status(500).json({
-            message: "Server error"
+            message: "Terjadi kesalahan pada server"
         });
     }
 }
 
 function logoutUser(req, res) {
-    const header = req.headers.authorization || "";
-    const token = header.startsWith("Bearer ") ? header.slice(7) : "";
+    const authorization = req.headers.authorization || "";
+    const token = authorization.startsWith("Bearer ")
+        ? authorization.slice(7)
+        : "";
 
     if (token) {
         removeToken(token);
     }
 
-    res.status(200).json({
+    res.json({
         message: "Logout berhasil"
     });
 }

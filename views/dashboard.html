@@ -4,13 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TokoRe</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="/css/components.css" rel="stylesheet">
     <link href="/css/dashboard.css" rel="stylesheet">
-    <link href="/css/cart.css" rel="stylesheet">
     <link href="/css/chat.css" rel="stylesheet">
+
     <script src="/js/components.js" defer></script>
     <script src="/js/auth.js" defer></script>
+    <script src="/js/notification.js" defer></script>
     <script src="/js/cart.js" defer></script>
     <script src="/js/product.js" defer></script>
     <script src="/js/chat.js" defer></script>
@@ -18,74 +20,153 @@
 </head>
 <body>
     <nav class="site-navbar">
-        <div class="container navbar-inner d-flex align-items-center justify-content-between gap-3">
+        <div class="container navbar-inner">
             <a href="/" class="brand">TokoRe</a>
+
             <div class="navbar-actions">
-                <custom-button id="btn-cart" text="Keranjang (0)" variant="light" size="sm"></custom-button>
-                <a href="/admin/products" id="btn-admin" class="text-decoration-none" style="display:none;">
-                    <custom-button text="Admin" variant="light" size="sm"></custom-button>
+                <custom-button
+                    id="btn-cart"
+                    text="Keranjang (0)"
+                    variant="light"
+                    size="sm"
+                ></custom-button>
+
+                <a
+                    href="/admin/products"
+                    id="btn-admin"
+                    class="text-decoration-none"
+                    style="display:none;"
+                >
+                    <custom-button
+                        text="Admin"
+                        variant="light"
+                        size="sm"
+                    ></custom-button>
                 </a>
-                <a href="/login-page" id="btn-login-nav" class="text-decoration-none">
-                    <custom-button text="Login Admin" variant="primary" size="sm"></custom-button>
+
+                <a
+                    href="/login-page"
+                    id="btn-login-nav"
+                    class="text-decoration-none"
+                >
+                    <custom-button
+                        text="Login Admin"
+                        variant="primary"
+                        size="sm"
+                    ></custom-button>
                 </a>
-                <custom-button id="btn-logout" text="Logout" variant="danger" size="sm" style="display:none;"></custom-button>
+
+                <custom-button
+                    id="btn-logout"
+                    text="Logout"
+                    variant="danger"
+                    size="sm"
+                    style="display:none;"
+                ></custom-button>
             </div>
         </div>
     </nav>
+
     <main class="container">
         <section class="hero-section">
             <div class="hero-content">
                 <h1 class="hero-title">Produk yang kamu cari, ada di sini.</h1>
-                <p class="hero-description">Lihat pilihan produk yang tersedia di TokoRe, cek detailnya, lalu pilih yang sesuai dengan kebutuhanmu.</p>
+
+                <p class="hero-description">
+                    Lihat pilihan produk yang tersedia di TokoRe, cek detailnya,
+                    lalu pilih yang sesuai dengan kebutuhanmu.
+                </p>
+
                 <div class="hero-line"></div>
             </div>
         </section>
+
         <section class="products-section">
             <div class="products-header">
-                <h2 class="section-title">Produk</h2>
-                <p class="section-description">Pilihan yang tersedia saat ini.</p>
+                <div>
+                    <h2 class="section-title">Produk</h2>
+                    <p class="section-description">
+                        Pilihan yang tersedia saat ini.
+                    </p>
+                </div>
             </div>
+
             <div id="product-list" class="product-grid"></div>
-            <div id="loading-state" class="loading-state">Memuat produk...</div>
-            <div id="empty-state" class="empty-state" style="display:none;">Belum ada produk yang tersedia.</div>
+
+            <div id="loading-state" class="loading-state">
+                Memuat produk...
+            </div>
+
+            <div
+                id="empty-state"
+                class="empty-state"
+                style="display:none;"
+            >
+                Belum ada produk yang tersedia.
+            </div>
         </section>
     </main>
+
     <div class="chat-panel" id="chat-panel">
         <div class="chat-header">
             <div>
                 <p class="chat-title">Bantuan TokoRe</p>
-                <p class="chat-subtitle">Tanyakan tentang produk dan toko</p>
+                <p class="chat-subtitle">
+                    Tanyakan tentang produk dan toko
+                </p>
             </div>
-            <button type="button" class="chat-close" id="chat-close">&times;</button>
+
+            <button
+                type="button"
+                class="chat-close"
+                id="chat-close"
+            >
+                &times;
+            </button>
         </div>
-        <div class="chat-messages" id="chat-messages">
-            <custom-chat-bubble role="assistant" message="Halo. Mau cari informasi produk apa?"></custom-chat-bubble>
+
+        <div
+            class="chat-messages"
+            id="chat-messages"
+        >
+            <custom-chat-bubble
+                role="assistant"
+                message="Halo. Mau cari informasi produk apa?"
+            ></custom-chat-bubble>
         </div>
+
         <div class="chat-input-wrap">
-            <form class="chat-form" id="chat-form">
-                <input type="text" class="chat-input" id="chat-input" placeholder="Tulis pertanyaan..." maxlength="1000" required>
-                <button type="submit" class="chat-send">Kirim</button>
+            <form
+                class="chat-form"
+                id="chat-form"
+            >
+                <input
+                    type="text"
+                    class="chat-input"
+                    id="chat-input"
+                    placeholder="Tulis pertanyaan..."
+                    maxlength="1000"
+                    required
+                >
+
+                <button
+                    type="submit"
+                    class="chat-send"
+                >
+                    Kirim
+                </button>
             </form>
         </div>
     </div>
+
     <div class="chat-launcher">
-        <button type="button" class="chat-toggle" id="chat-toggle">Butuh bantuan</button>
-    </div>
-    <div class="cart-modal" id="cart-modal">
-        <div class="cart-box">
-            <div class="cart-header">
-                <h2 class="cart-title">Keranjang</h2>
-                <button type="button" class="cart-close" id="cart-close">&times;</button>
-            </div>
-            <div class="cart-body" id="cart-body"></div>
-            <div class="cart-footer">
-                <div class="cart-total">
-                    <span class="cart-total-label">Total</span>
-                    <span class="cart-total-value" id="cart-total">Rp0</span>
-                </div>
-                <custom-button id="cart-checkout" text="Lanjutkan" variant="primary"></custom-button>
-            </div>
-        </div>
+        <button
+            type="button"
+            class="chat-toggle"
+            id="chat-toggle"
+        >
+            Butuh bantuan
+        </button>
     </div>
 </body>
 </html>

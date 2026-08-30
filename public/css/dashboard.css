@@ -1,6 +1,5 @@
 :root {
     --navy: #18324d;
-    --navy-dark: #10263c;
     --page: #f8f8f6;
     --text: #2f3d4a;
     --muted: #77828d;
@@ -26,6 +25,10 @@ body {
 
 .navbar-inner {
     min-height: 66px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
 }
 
 .brand {
@@ -55,9 +58,8 @@ body {
     color: var(--navy);
     font-family: Georgia, "Times New Roman", serif;
     font-size: clamp(31px, 4vw, 45px);
-    font-weight: 700;
     line-height: 1.15;
-    letter-spacing: -.8px;
+    font-weight: 700;
 }
 
 .hero-description {
@@ -150,12 +152,6 @@ body {
 
     .navbar-actions {
         gap: 4px;
-    }
-
-    .navbar-actions .custom-btn {
-        min-height: 33px;
-        padding: 0 9px;
-        font-size: 11px;
     }
 
     .hero-title {
